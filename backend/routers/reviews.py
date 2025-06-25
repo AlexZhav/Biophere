@@ -10,10 +10,11 @@ router = APIRouter(prefix="/reviews", tags=["reviews"])
 
 @router.post("/", response_model=schemas.ReviewRead)
 def create_review(review: schemas.ReviewCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
-    last_review = db.query(Review).filter(Review.user_id == current_user.id).order_by(Review.created_at.desc()).first()
-    if last_review and last_review.created_at > five_minutes_ago:
-        raise HTTPException(status_code=429, detail="Можно оставлять отзыв не чаще, чем раз в 5 минут")
+    if not current_user.is_admin:
+        five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
+        last_review = db.query(Review).filter(Review.user_id == current_user.id).order_by(Review.created_at.desc()).first()
+        if last_review and last_review.created_at > five_minutes_ago:
+            raise HTTPException(status_code=429, detail="Можно оставлять отзыв не чаще, чем раз в 5 минут")
     db_review = Review(user_id=current_user.id, rating=review.rating, text=review.text)
     db.add(db_review)
     db.commit()
@@ -47,7 +48,7 @@ def delete_review(review_id: int, db: Session = Depends(get_db), current_user: U
     db_review = db.query(Review).filter(Review.id == review_id).first()
     if not db_review:
         raise HTTPException(status_code=404, detail="Отзыв не найден")
-    if db_review.user_id != current_user.id:
+    if db_review.user_id != current_user.id and not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Нет доступа к удалению этого отзыва")
     db.delete(db_review)
     db.commit()

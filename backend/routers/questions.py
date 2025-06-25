@@ -41,7 +41,7 @@ def delete_question(question_id: int, db: Session = Depends(get_db), current_use
     db_question = db.query(Question).filter(Question.id == question_id).first()
     if not db_question:
         raise HTTPException(status_code=404, detail="Вопрос не найден")
-    if db_question.user_id != current_user.id:
+    if db_question.user_id != current_user.id and not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Нет доступа к удалению этого вопроса")
     db.delete(db_question)
     db.commit()

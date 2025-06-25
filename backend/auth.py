@@ -45,11 +45,13 @@ def get_user_by_email(db: Session, email: str):
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
+    is_admin = user.email == 'admin@biosfera.ru'
     db_user = User(
         name=user.name,
         email=user.email,
         phone=user.phone,
-        password_hash=get_password_hash(user.password)
+        password_hash=get_password_hash(user.password),
+        is_admin=is_admin
     )
     db.add(db_user)
     db.commit()

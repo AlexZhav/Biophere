@@ -199,7 +199,7 @@ export default function ReviewsPage() {
                     {review.text}
                   </p>
                 </div>
-                {user && user.id === review.user_id && (
+                {user && (user.id === review.user_id || user.is_admin) && (
                   <div className="flex gap-2 mt-2">
                     <button
                       className="flex items-center gap-1 text-biosfera-primary hover:text-biosfera-secondary"
