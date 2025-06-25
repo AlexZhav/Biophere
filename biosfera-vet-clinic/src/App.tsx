@@ -601,6 +601,24 @@ function App() {
     }
   }
 
+  const mainSectionIds = ['hero', 'faq', 'prices', 'main-specialists', 'main-reviews'];
+  const [currentMainSection, setCurrentMainSection] = useState(0);
+
+  useEffect(() => {
+    // Обновление текущей секции при скролле только на главной
+    const handleScroll = () => {
+      const offsets = mainSectionIds.map(id => {
+        const el = document.getElementById(id)
+        return el ? el.getBoundingClientRect().top : Infinity
+      })
+      const index = offsets.findIndex(offset => offset > 80)
+      setCurrentMainSection(index === -1 ? mainSectionIds.length - 1 : Math.max(0, index - 1))
+    }
+    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, []);
+
   return (
     <Router>
       <AuthProvider>
@@ -615,6 +633,25 @@ function App() {
                   <section id="prices"><PriceSection /></section>
                   <section id="main-specialists"><SpecialistsPreviewBlock /></section>
                   <section id="main-reviews"><ReviewsPreviewBlock /></section>
+                  {/* Кнопки прокрутки только на главной */}
+                  {currentMainSection < mainSectionIds.length - 1 && (
+                    <button
+                      onClick={() => scrollTo(mainSectionIds[currentMainSection + 1])}
+                      className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
+                      title="Вниз к следующему разделу"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                  )}
+                  {currentMainSection > 0 && (
+                    <button
+                      onClick={() => scrollTo(mainSectionIds[currentMainSection - 1])}
+                      className="fixed z-50 right-6 bottom-40 md:bottom-48 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
+                      title="Вверх к предыдущему разделу"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+                    </button>
+                  )}
                 </>} />
                 <Route path="/faq" element={<FAQSection />} />
                 <Route path="/pricelist" element={<PriceSection />} />
@@ -625,21 +662,6 @@ function App() {
             <Footer />
             <CookieConsent />
             <Toaster />
-            {/* Кнопки прокрутки */}
-            <button
-              onClick={() => scrollTo('main-reviews')}
-              className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
-              title="Вниз к отзывам"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-            </button>
-            <button
-              onClick={() => scrollTo('main-specialists')}
-              className="fixed z-50 right-6 bottom-40 md:bottom-48 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
-              title="Вверх к специалистам"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
-            </button>
           </div>
         </ThemeProvider>
       </AuthProvider>
