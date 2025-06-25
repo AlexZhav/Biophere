@@ -9,7 +9,7 @@ const specialists = [
     position: 'Главный ветеринарный врач',
     specialization: 'Терапия, диагностика',
     experience: '15 лет',
-    education: 'КВИ, специальность "Ветеринария"',
+    workplace: 'ул. Солнечная, 19Б',
     photo: '/images/specialists/doctor1.jpg',
     bio: 'Опытный специалист в области ветеринарной терапии и диагностики.',
   },
@@ -19,7 +19,7 @@ const specialists = [
     position: 'Ветеринарный хирург',
     specialization: 'Хирургия, травматология',
     experience: '12 лет',
-    education: 'МВА, кандидат ветеринарных наук',
+    workplace: 'ул. Московская, 4',
     photo: '/images/specialists/doctor2.jpg',
     bio: 'Специализируется на сложных хирургических операциях.',
   },
@@ -29,7 +29,7 @@ const specialists = [
     position: 'Ветеринарный дерматолог',
     specialization: 'Дерматология, аллергология',
     experience: '8 лет',
-    education: 'СПбГВМ, специализация по дерматологии',
+    workplace: 'ул. Молодой Гвардии, 2Д, Нововятский район',
     photo: '/images/specialists/doctor3.webp',
     bio: 'Эксперт по кожным заболеваниям и аллергическим реакциям у животных.',
   },
@@ -39,7 +39,7 @@ const specialists = [
     position: 'Ветеринарный кардиолог',
     specialization: 'Кардиология, УЗИ диагностика',
     experience: '10 лет',
-    education: 'МГАВМ, специализация по кардиологии',
+    workplace: 'пр-т Строителей, 9, корпус 1',
     photo: '/images/specialists/doctor4.jpg',
     bio: 'Специалист по заболеваниям сердечно-сосудистой системы.',
   },
@@ -49,7 +49,7 @@ const specialists = [
     position: 'Ветеринарный офтальмолог',
     specialization: 'Офтальмология, микрохирургия глаза',
     experience: '7 лет',
-    education: 'КазГВМ, постдипломное образование по офтальмологии',
+    workplace: 'ул. Чернышевского, 7',
     photo: '/images/specialists/doctor5.jpg',
     bio: 'Занимается лечением заболеваний глаз у животных.',
   },
@@ -59,37 +59,44 @@ const specialists = [
     position: 'Ветеринарный ортопед',
     specialization: 'Ортопедия, неврология',
     experience: '9 лет',
-    education: 'УрГСХА, специализация по ортопедии',
+    workplace: 'ул. Украинская, 18',
     photo: '/images/specialists/doctor6.jpg',
     bio: 'Специализируется на лечении заболеваний опорно-двигательного аппарата.',
   },
 ]
 
+const workplaces = [
+  'ул. Солнечная, 19Б',
+  'ул. Московская, 4',
+  'ул. Молодой Гвардии, 2Д, Нововятский район',
+  'пр-т Строителей, 9, корпус 1',
+  'ул. Чернышевского, 7',
+  'ул. Украинская, 18',
+]
+
 export default function SpecialistsPage() {
   const [search, setSearch] = useState('')
   const [specialization, setSpecialization] = useState('')
-  const [education, setEducation] = useState('')
+  const [workplace, setWorkplace] = useState('')
   const [position, setPosition] = useState('')
 
   const specializations = Array.from(new Set(specialists.map(s => s.specialization)))
-  const educations = Array.from(new Set(specialists.map(s => s.education)))
   const positions = Array.from(new Set(specialists.map(s => s.position)))
 
   const filtered = specialists.filter(s => {
     const matchesSearch =
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.specialization.toLowerCase().includes(search.toLowerCase()) ||
-      s.position.toLowerCase().includes(search.toLowerCase()) ||
-      s.education.toLowerCase().includes(search.toLowerCase())
+      s.position.toLowerCase().includes(search.toLowerCase())
     const matchesSpec = !specialization || s.specialization === specialization
-    const matchesEdu = !education || s.education === education
     const matchesPos = !position || s.position === position
-    return matchesSearch && matchesSpec && matchesEdu && matchesPos
+    const matchesWork = !workplace || s.workplace === workplace
+    return matchesSearch && matchesSpec && matchesPos && matchesWork
   })
 
   const resetFilters = () => {
     setSpecialization('')
-    setEducation('')
+    setWorkplace('')
     setPosition('')
   }
 
@@ -126,13 +133,13 @@ export default function SpecialistsPage() {
               ))}
             </select>
             <select
-              value={education}
-              onChange={e => setEducation(e.target.value)}
+              value={workplace}
+              onChange={e => setWorkplace(e.target.value)}
               className="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
             >
-              <option value="">Место работы / Образование</option>
-              {educations.map(edu => (
-                <option key={edu} value={edu}>{edu}</option>
+              <option value="">Место работы</option>
+              {workplaces.map(w => (
+                <option key={w} value={w}>{w}</option>
               ))}
             </select>
             <button
@@ -180,7 +187,7 @@ export default function SpecialistsPage() {
                   </div>
                   <div className="flex items-start">
                     <span className="font-semibold">Место работы:</span>
-                    <span className="ml-2 leading-tight">{specialist.education}</span>
+                    <span className="ml-2 leading-tight">{specialist.workplace}</span>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
