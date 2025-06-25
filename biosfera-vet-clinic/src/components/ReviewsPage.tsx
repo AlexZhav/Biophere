@@ -222,7 +222,7 @@ export default function ReviewsPage() {
                     {review.text}
                   </p>
                   {review.admin_reply && (
-                    <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900 rounded text-blue-900 dark:text-blue-100 text-sm">
+                    <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900 rounded text-black dark:text-white text-sm">
                       <b>Ответ администратора:</b> {review.admin_reply}
                     </div>
                   )}
