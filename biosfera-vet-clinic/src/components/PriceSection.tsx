@@ -123,67 +123,10 @@ export function PriceSection() {
             </Card>
           ))}
         </div>
-
-        {/* Important Information */}
-        <div className="bg-gradient-to-r from-biosfera-primary/5 to-biosfera-secondary/5 rounded-xl p-8 mb-8">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              Важная информация
-            </h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600 dark:text-gray-300">
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-biosfera-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <p>Указанные цены являются базовыми и могут изменяться в зависимости от сложности случая</p>
-              </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-biosfera-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <p>Окончательная стоимость определяется после осмотра животного врачом</p>
-              </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-biosfera-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <p>Цены на лекарственные препараты рассчитываются отдельно</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-biosfera-secondary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <p>Действуют скидки для постоянных клиентов и владельцев нескольких животных</p>
-              </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-biosfera-secondary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <p>Возможна оплата наличными и банковскими картами</p>
-              </div>
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-biosfera-secondary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <p>Предоставляется рассрочка на дорогостоящие операции</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact for Pricing */}
-        <div className="text-center">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-2xl mx-auto shadow-sm border">
-            <FileText className="h-12 w-12 text-biosfera-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Нужна точная стоимость?
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Для получения точной стоимости услуг свяжитесь с нашими администраторами или запишитесь на консультацию
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-biosfera-primary hover:bg-biosfera-primary/90">
-                <Phone className="h-4 w-4 mr-2" />
-                Позвонить
-              </Button>
-              <Button variant="outline" className="border-biosfera-secondary text-biosfera-secondary hover:bg-biosfera-secondary/10">
-                Записаться на прием
-              </Button>
-            </div>
-          </div>
+        <div className="text-center mt-8">
+          <a href="/pricelist" className="inline-block px-8 py-4 bg-biosfera-primary text-white rounded-lg text-lg font-semibold shadow hover:bg-biosfera-primary/90 transition-colors">
+            Полный прейскурант
+          </a>
         </div>
       </div>
     </section>

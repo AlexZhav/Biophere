@@ -50,8 +50,8 @@ export default function FAQPreviewBlock() {
         </div>
         <div className="text-center mt-12">
           <p className="text-gray-600 dark:text-gray-300 mb-4">Не нашли ответ на свой вопрос?</p>
-          <a href="tel:+78332123456" className="inline-flex items-center justify-center px-6 py-3 bg-biosfera-primary text-white rounded-lg hover:bg-biosfera-primary/90 transition-colors font-medium">
-            <Phone className="mr-2 h-5 w-5" /> Позвонить нам
+          <a href="/faq" className="inline-flex items-center justify-center px-6 py-3 bg-biosfera-primary text-white rounded-lg hover:bg-biosfera-primary/90 transition-colors font-medium">
+            Задать свой вопрос
           </a>
         </div>
       </div>

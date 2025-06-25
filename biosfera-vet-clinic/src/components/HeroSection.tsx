@@ -72,14 +72,12 @@ export function HeroSection() {
                 
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                   <span className="text-transparent bg-clip-text" style={{ background: 'linear-gradient(to right, rgb(2, 133, 162), rgb(76, 175, 80))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    Окружаем заботой
+                    Биосфера
                   </span>
                 </h1>
-                
-                <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg">
-                  Современная ветеринарная клиника с опытными специалистами и новейшим оборудованием. 
-                  Полный спектр услуг для здоровья и благополучия ваших любимцев.
-                </p>
+                <div className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-gray-200">
+                  Ветеринарная клиника, которой доверяют
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -141,18 +139,9 @@ export function HeroSection() {
                       <Phone className="h-8 w-8" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">
-                        Экстренный вызов
-                      </h3>
-                      <p className="text-red-100 mb-2">
-                        Круглосуточная помощь
-                      </p>
-                      <a 
-                        href="tel:+78332123456" 
-                        className="text-xl font-bold hover:underline"
-                      >
-                        +7 (8332) 12-34-56
-                      </a>
+                      <div className="text-2xl font-bold mb-1">Работаем круглосуточно</div>
+                      <div className="text-lg mb-1">пр-т Строителей, 9, корпус 1</div>
+                      <div className="text-xl font-bold">44-37-97</div>
                     </div>
                   </div>
                 </CardContent>

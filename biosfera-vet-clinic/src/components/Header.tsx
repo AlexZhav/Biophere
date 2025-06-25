@@ -94,17 +94,6 @@ export function Header({ onNavigateToSection }: HeaderProps) {
             </Button>
           </div>
 
-          {/* Center - Booking Button */}
-          <div className="hidden md:block">
-            <Button
-              onClick={() => setIsBookingOpen(true)}
-              className="text-white px-6 py-2 font-medium rounded-lg shadow-md border-0"
-              style={{ background: 'linear-gradient(to right, rgb(2, 133, 162), rgb(76, 175, 80))' }}
-            >
-              Записаться онлайн
-            </Button>
-          </div>
-
           {/* Right side - Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
             {user ? (
@@ -184,16 +173,6 @@ export function Header({ onNavigateToSection }: HeaderProps) {
         {isMobileMenuOpen && (
           <div className="border-t lg:hidden">
             <div className="container py-4 space-y-4">
-              <Button
-                onClick={() => {
-                  setIsBookingOpen(true)
-                  setIsMobileMenuOpen(false)
-                }}
-                className="w-full bg-biosfera-secondary hover:bg-biosfera-secondary/90 text-white"
-              >
-                Записаться онлайн
-              </Button>
-              
               <div className="space-y-2">
                 <Button
                   variant="ghost"
