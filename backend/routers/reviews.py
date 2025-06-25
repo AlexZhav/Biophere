@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from auth import get_current_user, get_db
@@ -52,4 +52,16 @@ def delete_review(review_id: int, db: Session = Depends(get_db), current_user: U
         raise HTTPException(status_code=403, detail="Нет доступа к удалению этого отзыва")
     db.delete(db_review)
     db.commit()
-    return None 
+    return None
+
+@router.patch("/{review_id}/reply", response_model=schemas.ReviewRead)
+def admin_reply_review(review_id: int, reply: str = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Требуются права администратора")
+    db_review = db.query(Review).filter(Review.id == review_id).first()
+    if not db_review:
+        raise HTTPException(status_code=404, detail="Отзыв не найден")
+    db_review.admin_reply = reply
+    db.commit()
+    db.refresh(db_review)
+    return db_review 

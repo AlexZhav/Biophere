@@ -19,6 +19,7 @@ class Review(Base):
     rating = Column(Integer, nullable=False)
     text = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    admin_reply = Column(Text, nullable=True)
 
     user = relationship('User', backref='reviews')
 
@@ -28,5 +29,6 @@ class Question(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     text = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    admin_reply = Column(Text, nullable=True)
 
     user = relationship('User', backref='questions') 

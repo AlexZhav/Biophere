@@ -9,6 +9,7 @@ interface Question {
   text: string
   created_at: string
   user?: { name: string }
+  admin_reply?: string | null
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -21,6 +22,8 @@ export default function FAQSection() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [replyingId, setReplyingId] = useState<number | null>(null)
+  const [replyText, setReplyText] = useState<string>('')
 
   const fetchQuestions = async () => {
     setLoading(true)
@@ -82,6 +85,26 @@ export default function FAQSection() {
       fetchQuestions()
     } catch {
       setError('Ошибка удаления')
+    }
+  }
+
+  const handleReply = async (id: number) => {
+    if (!token) return
+    try {
+      const res = await fetch(`${API_URL}/questions/${id}/reply`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(replyText),
+      })
+      if (!res.ok) throw new Error('Ошибка ответа')
+      setReplyingId(null)
+      setReplyText('')
+      fetchQuestions()
+    } catch {
+      setError('Ошибка ответа')
     }
   }
 
@@ -164,6 +187,31 @@ export default function FAQSection() {
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     {question.text}
                   </p>
+                  {question.admin_reply && (
+                    <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900 rounded text-blue-900 dark:text-blue-100 text-sm">
+                      <b>Ответ администратора:</b> {question.admin_reply}
+                    </div>
+                  )}
+                  {user && user.is_admin && (
+                    <div className="mt-2">
+                      {replyingId === question.id ? (
+                        <div className="flex flex-col gap-2">
+                          <textarea
+                            className="w-full border rounded p-2"
+                            value={replyText}
+                            onChange={e => setReplyText(e.target.value)}
+                            placeholder="Ответ администратора..."
+                          />
+                          <div className="flex gap-2">
+                            <button className="bg-biosfera-primary text-white px-4 py-1 rounded" onClick={() => handleReply(question.id)} type="button">Сохранить</button>
+                            <button className="text-gray-500" onClick={() => { setReplyingId(null); setReplyText('') }} type="button">Отмена</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button className="text-biosfera-primary hover:underline" onClick={() => { setReplyingId(question.id); setReplyText(question.admin_reply || '') }}>Ответить</button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from auth import get_current_user, get_db
@@ -45,4 +45,16 @@ def delete_question(question_id: int, db: Session = Depends(get_db), current_use
         raise HTTPException(status_code=403, detail="Нет доступа к удалению этого вопроса")
     db.delete(db_question)
     db.commit()
-    return None 
+    return None
+
+@router.patch("/{question_id}/reply", response_model=schemas.QuestionRead)
+def admin_reply_question(question_id: int, reply: str = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Требуются права администратора")
+    db_question = db.query(Question).filter(Question.id == question_id).first()
+    if not db_question:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    db_question.admin_reply = reply
+    db.commit()
+    db.refresh(db_question)
+    return db_question 

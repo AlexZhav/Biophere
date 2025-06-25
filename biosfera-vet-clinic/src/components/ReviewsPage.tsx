@@ -11,6 +11,7 @@ interface Review {
   rating: number
   text: string
   user?: { name: string, avatar?: string }
+  admin_reply?: string | null
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -25,6 +26,8 @@ export default function ReviewsPage() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [replyingId, setReplyingId] = useState<number | null>(null)
+  const [replyText, setReplyText] = useState<string>('')
 
   const fetchReviews = async () => {
     setLoading(true)
@@ -96,6 +99,26 @@ export default function ReviewsPage() {
       fetchReviews()
     } catch {
       setError('Ошибка удаления')
+    }
+  }
+
+  const handleReply = async (id: number) => {
+    if (!token) return
+    try {
+      const res = await fetch(`${API_URL}/reviews/${id}/reply`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(replyText),
+      })
+      if (!res.ok) throw new Error('Ошибка ответа')
+      setReplyingId(null)
+      setReplyText('')
+      fetchReviews()
+    } catch {
+      setError('Ошибка ответа')
     }
   }
 
@@ -198,6 +221,31 @@ export default function ReviewsPage() {
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     {review.text}
                   </p>
+                  {review.admin_reply && (
+                    <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900 rounded text-blue-900 dark:text-blue-100 text-sm">
+                      <b>Ответ администратора:</b> {review.admin_reply}
+                    </div>
+                  )}
+                  {user && user.is_admin && (
+                    <div className="mt-2">
+                      {replyingId === review.id ? (
+                        <div className="flex flex-col gap-2">
+                          <textarea
+                            className="w-full border rounded p-2"
+                            value={replyText}
+                            onChange={e => setReplyText(e.target.value)}
+                            placeholder="Ответ администратора..."
+                          />
+                          <div className="flex gap-2">
+                            <button className="bg-biosfera-primary text-white px-4 py-1 rounded" onClick={() => handleReply(review.id)} type="button">Сохранить</button>
+                            <button className="text-gray-500" onClick={() => { setReplyingId(null); setReplyText('') }} type="button">Отмена</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button className="text-biosfera-primary hover:underline" onClick={() => { setReplyingId(review.id); setReplyText(review.admin_reply || '') }}>Ответить</button>
+                      )}
+                    </div>
+                  )}
                 </div>
                 {user && (user.id === review.user_id || user.is_admin) && (
                   <div className="flex gap-2 mt-2">
