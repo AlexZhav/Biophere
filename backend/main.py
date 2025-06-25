@@ -14,7 +14,10 @@ app = FastAPI(title="Biosfera API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "https://biosfera-frontend.onrender.com",  # адрес твоего фронта
+        "http://localhost:5173"                    # для локальной разработки (можно убрать на проде)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
