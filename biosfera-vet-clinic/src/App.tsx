@@ -7,7 +7,7 @@ import { PriceSection } from '@/components/PriceSection'
 import { Footer } from '@/components/Footer'
 import { CookieConsent } from '@/components/CookieConsent'
 import { Toaster } from '@/components/ui/toaster'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { Stethoscope, Filter, XCircle, Pencil, Trash, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -531,6 +531,14 @@ function FaqPage() {
   )
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   useEffect(() => {
     // Add smooth scrolling behavior
@@ -621,6 +629,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <AuthProvider>
         <ThemeProvider>
           <div className="min-h-screen bg-background text-foreground">
