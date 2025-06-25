@@ -1,6 +1,7 @@
 import React from 'react'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './ui/accordion'
 import { Phone } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const popularFaq = [
   {
@@ -50,9 +51,9 @@ export default function FAQPreviewBlock() {
         </div>
         <div className="text-center mt-12">
           <p className="text-gray-600 dark:text-gray-300 mb-4">Не нашли ответ на свой вопрос?</p>
-          <a href="/faq" className="inline-flex items-center justify-center px-6 py-3 bg-biosfera-primary text-white rounded-lg hover:bg-biosfera-primary/90 transition-colors font-medium">
+          <Link to="/faq" className="inline-flex items-center justify-center px-6 py-3 bg-biosfera-primary text-white rounded-lg hover:bg-biosfera-primary/90 transition-colors font-medium">
             Задать свой вопрос
-          </a>
+          </Link>
         </div>
       </div>
     </section>

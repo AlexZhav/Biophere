@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Star, Quote } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const reviews = [
   {
@@ -111,7 +112,7 @@ export default function ReviewsPreviewBlock() {
           ))}
         </div>
         <div className="text-center mt-8">
-          <a href="/reviews-page" className="inline-block bg-biosfera-primary text-white px-6 py-3 rounded-lg font-medium shadow hover:bg-biosfera-secondary transition-colors">Читать все отзывы</a>
+          <Link to="/reviews-page" className="inline-block bg-biosfera-primary text-white px-6 py-3 rounded-lg font-medium shadow hover:bg-biosfera-secondary transition-colors">Читать все отзывы</Link>
         </div>
       </div>
     </section>

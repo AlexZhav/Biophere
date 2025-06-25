@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { DollarSign } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const previewServices = [
   { name: 'Первичный прием', price: 'от 800', description: 'Осмотр и консультация врача' },
@@ -33,9 +34,9 @@ export default function PricePreviewBlock() {
           ))}
         </div>
         <div className="text-center mt-4">
-          <a href="/pricelist" className="inline-block bg-biosfera-primary text-white px-6 py-3 rounded-lg font-medium shadow hover:bg-biosfera-secondary transition-colors">
+          <Link to="/pricelist" className="inline-block bg-biosfera-primary text-white px-6 py-3 rounded-lg font-medium shadow hover:bg-biosfera-secondary transition-colors">
             Смотреть полный прейскурант
-          </a>
+          </Link>
         </div>
       </div>
     </section>

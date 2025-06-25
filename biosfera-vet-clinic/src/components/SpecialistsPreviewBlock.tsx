@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Link } from 'react-router-dom'
 
 const specialists = [
   {
@@ -111,7 +112,7 @@ export default function SpecialistsPreviewBlock() {
           ))}
         </div>
         <div className="text-center mt-8">
-          <a href="/specialists-page" className="inline-block bg-biosfera-primary text-white px-6 py-3 rounded-lg font-medium shadow hover:bg-biosfera-secondary transition-colors">Смотреть всех специалистов</a>
+          <Link to="/specialists-page" className="inline-block bg-biosfera-primary text-white px-6 py-3 rounded-lg font-medium shadow hover:bg-biosfera-secondary transition-colors">Смотреть всех специалистов</Link>
         </div>
       </div>
     </section>
