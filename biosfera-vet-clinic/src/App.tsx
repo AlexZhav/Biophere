@@ -20,25 +20,8 @@ import ReviewsPage from './components/ReviewsPage'
 import SpecialistsPage from './components/SpecialistsPage'
 import SpecialistsPreviewBlock from './components/SpecialistsPreviewBlock'
 import ReviewsPreviewBlock from './components/ReviewsPreviewBlock'
-
-function PricelistPage() {
-  return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-[#1f2937] dark:bg-[#1f2937] bg-gradient-to-br from-[#f8fafc] to-[#e6f9ef] dark:from-[#1f2937] dark:to-[#1f2937] text-foreground flex flex-col">
-      <Header onNavigateToSection={() => {}} />
-      <main className="flex-1 flex items-center justify-center py-12">
-        <iframe
-          src="https://p.bios.re/pricelist/services?onlySearch=true"
-          title="Прейскурант"
-          className="w-full max-w-5xl h-[80vh] rounded-xl border shadow-lg bg-white dark:bg-gray-900"
-          style={{ minHeight: 600 }}
-        />
-      </main>
-      <Footer />
-    </div>
-    </ThemeProvider>
-  )
-}
+import PricePreviewBlock from './components/PricePreviewBlock'
+import PricelistPage from './components/PricelistPage'
 
 const specialists = [
   {
@@ -610,7 +593,7 @@ function App() {
     }
   }
 
-  const mainSectionIds = ['hero', 'faq', 'prices', 'main-specialists', 'main-reviews'];
+  const mainSectionIds = ['hero', 'faq', 'specialists', 'reviews', 'prices'];
   const [currentMainSection, setCurrentMainSection] = useState(0);
 
   useEffect(() => {
@@ -637,36 +620,38 @@ function App() {
             <Header onNavigateToSection={handleNavigateToSection} />
             <main>
               <Routes>
-                <Route path="/" element={<>
-                  <section id="hero"><HeroSection /></section>
-                  <section id="faq"><FAQPreviewBlock /></section>
-                  <section id="prices"><PriceSection /></section>
-                  <section id="main-specialists"><SpecialistsPreviewBlock /></section>
-                  <section id="main-reviews"><ReviewsPreviewBlock /></section>
-                  {/* Кнопки прокрутки только на главной */}
-                  {currentMainSection < mainSectionIds.length - 1 && (
-                    <button
-                      onClick={() => scrollTo(mainSectionIds[currentMainSection + 1])}
-                      className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
-                      title="Вниз к следующему разделу"
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                    </button>
-                  )}
-                  {currentMainSection > 0 && (
-                    <button
-                      onClick={() => scrollTo(mainSectionIds[currentMainSection - 1])}
-                      className="fixed z-50 right-6 bottom-40 md:bottom-48 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
-                      title="Вверх к предыдущему разделу"
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
-                    </button>
-                  )}
-                </>} />
-                <Route path="/faq" element={<FAQSection />} />
-                <Route path="/pricelist" element={<PriceSection />} />
-                <Route path="/reviews-page" element={<ReviewsPage />} />
+                <Route path="/" element={
+                  <>
+                    <HeroSection />
+                    <FAQPreviewBlock />
+                    <SpecialistsPreviewBlock />
+                    <ReviewsPreviewBlock />
+                    <PricePreviewBlock />
+                    {/* Кнопки прокрутки между секциями */}
+                    {currentMainSection < mainSectionIds.length - 1 && (
+                      <button
+                        onClick={() => scrollToSection(currentMainSection + 1)}
+                        className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
+                        title="Вниз к следующему разделу"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                      </button>
+                    )}
+                    {currentMainSection > 0 && (
+                      <button
+                        onClick={() => scrollToSection(currentMainSection - 1)}
+                        className="fixed z-50 right-6 bottom-40 md:bottom-48 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
+                        title="Вверх к предыдущему разделу"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+                      </button>
+                    )}
+                  </>
+                } />
+                <Route path="/pricelist" element={<PricelistPage />} />
                 <Route path="/specialists-page" element={<SpecialistsPage />} />
+                <Route path="/reviews-page" element={<ReviewsPage />} />
+                <Route path="/faq" element={<FAQSection />} />
               </Routes>
             </main>
             <Footer />
