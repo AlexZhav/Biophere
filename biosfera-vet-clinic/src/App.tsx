@@ -24,17 +24,17 @@ function PricelistPage() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-[#1f2937] dark:bg-[#1f2937] bg-gradient-to-br from-[#f8fafc] to-[#e6f9ef] dark:from-[#1f2937] dark:to-[#1f2937] text-foreground flex flex-col">
-      <Header onNavigateToSection={() => {}} />
-      <main className="flex-1 flex items-center justify-center py-12">
-        <iframe
-          src="https://p.bios.re/pricelist/services?onlySearch=true"
-          title="Прейскурант"
-          className="w-full max-w-5xl h-[80vh] rounded-xl border shadow-lg bg-white dark:bg-gray-900"
-          style={{ minHeight: 600 }}
-        />
-      </main>
-      <Footer />
-    </div>
+        <Header onNavigateToSection={() => { }} />
+        <main className="flex-1 flex items-center justify-center py-12">
+          <iframe
+            src="https://p.bios.re/pricelist/services?onlySearch=true"
+            title="Прейскурант"
+            className="w-full max-w-5xl h-[80vh] rounded-xl border shadow-lg bg-white dark:bg-gray-900"
+            style={{ minHeight: 600 }}
+          />
+        </main>
+        <Footer />
+      </div>
     </ThemeProvider>
   )
 }
@@ -135,7 +135,7 @@ function MainSpecialistsPage() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-[#1f2937] dark:bg-[#1f2937] bg-gradient-to-br from-[#f8fafc] to-[#e6f9ef] dark:from-[#1f2937] dark:to-[#1f2937] text-foreground flex flex-col">
-        <Header onNavigateToSection={() => {}} />
+        <Header onNavigateToSection={() => { }} />
         <main className="flex-1 py-12">
           <div className="container mx-auto px-4">
             <div className="mb-8 flex flex-col md:flex-row md:items-end gap-4">
@@ -208,8 +208,8 @@ function MainSpecialistsPage() {
                     <CardContent className="p-6">
                       <div className="text-center mb-6">
                         <div className="w-24 h-24 bg-gradient-to-br from-biosfera-primary to-biosfera-secondary rounded-full mx-auto mb-4 overflow-hidden">
-                          <img 
-                            src={specialist.photo} 
+                          <img
+                            src={specialist.photo}
                             alt={specialist.name}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -342,7 +342,7 @@ function TestimonialsPage() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-[#1f2937] dark:bg-[#1f2937] bg-gradient-to-br from-[#f8fafc] to-[#e6f9ef] dark:from-[#1f2937] dark:to-[#1f2937] text-foreground flex flex-col">
-        <Header onNavigateToSection={() => {}} />
+        <Header onNavigateToSection={() => { }} />
         <main className="flex-1 py-12">
           <div className="container mx-auto px-4">
             <div className="mb-8 flex flex-col md:flex-row md:items-end gap-4">
@@ -364,7 +364,7 @@ function TestimonialsPage() {
                   className="border rounded-lg px-4 py-2 bg-white dark:bg-[rgb(17,24,39)] bg-gradient-to-br from-white to-[#e3eaff] dark:from-[rgb(17,24,39)] dark:to-[rgb(17,24,39)] text-gray-900 dark:text-gray-100"
                 >
                   <option value="">Все</option>
-                  {[5,4,3,2,1].map(r => (
+                  {[5, 4, 3, 2, 1].map(r => (
                     <option key={r} value={r}>{r} звёзд</option>
                   ))}
                 </select>
@@ -472,7 +472,7 @@ function FaqPage() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-[#1f2937] dark:bg-[#1f2937] bg-gradient-to-br from-[#f8fafc] to-[#e6f9ef] dark:from-[#1f2937] dark:to-[#1f2937] text-foreground flex flex-col">
-        <Header onNavigateToSection={() => {}} />
+        <Header onNavigateToSection={() => { }} />
         <main className="flex-1 py-12">
           <div className="container mx-auto px-4 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">Вопросы и ответы</h2>
@@ -535,10 +535,10 @@ function App() {
   useEffect(() => {
     // Add smooth scrolling behavior
     document.documentElement.classList.add('smooth-scroll')
-    
+
     // SEO meta tags
     document.title = 'Биосфера - Ветеринарная клиника в Кирове | Лечение животных 24/7'
-    
+
     const metaDescription = document.querySelector('meta[name="description"]')
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Ветеринарная клиника Биосфера в Кирове - профессиональная медицинская помощь животным 24/7. 6 филиалов, опытные врачи, современное оборудование. Записаться онлайн.')
@@ -609,15 +609,16 @@ function App() {
             <Header onNavigateToSection={handleNavigateToSection} />
             <main>
               <Routes>
-                <Route path="/" element={<>
-                  <section id="hero"><HeroSection /></section>
-                  <section id="main-specialists"><SpecialistsPreviewBlock /></section>
-                  <section id="main-reviews"><ReviewsPreviewBlock /></section>
-                </>} />
-                <Route path="/faq" element={<FAQSection />} />
-                <Route path="/pricelist" element={<PriceSection />} />
-                <Route path="/reviews-page" element={<ReviewsPage />} />
-                <Route path="/specialists-page" element={<SpecialistsPage />} />
+                <Route path="/" element={
+                  <>Ы
+                    <section id="hero"><HeroSection /></section>
+                    <section id="faq"><FAQSection /></section>
+                    <section id="prices"><PriceSection /></section>
+                    <section id="main-specialists"><SpecialistsPreviewBlock /></section>
+                    <section id="main-reviews"><ReviewsPreviewBlock /></section>
+                  </>
+                } />
+                {/* остальные маршруты */}
               </Routes>
             </main>
             <Footer />
