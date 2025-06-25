@@ -9,5 +9,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  preview: {
+    allowedHosts: ["biophere.onrender.com"]
+  }
 })
 
