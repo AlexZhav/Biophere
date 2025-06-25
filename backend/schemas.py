@@ -27,5 +27,6 @@ class ReviewUpdate(BaseModel):
 class ReviewRead(ReviewBase):
     id: int
     user_id: int
+    user: UserRead | None = None
     class Config:
         orm_mode = True 

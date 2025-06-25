@@ -22,7 +22,10 @@ def create_review(review: schemas.ReviewCreate, db: Session = Depends(get_db), c
 
 @router.get("/", response_model=list[schemas.ReviewRead])
 def get_reviews(db: Session = Depends(get_db)):
-    return db.query(Review).all()
+    reviews = db.query(Review).all()
+    for r in reviews:
+        r.user  # подгружаем user
+    return reviews
 
 @router.put("/{review_id}", response_model=schemas.ReviewRead)
 def update_review(review_id: int, review: schemas.ReviewUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

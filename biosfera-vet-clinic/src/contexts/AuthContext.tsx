@@ -78,8 +78,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, phone, password }),
     });
-    if (!res.ok) throw new Error('Ошибка регистрации');
-    // После регистрации сразу логинимся
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error('Ошибка регистрации: ' + errorText);
+    }
     await login(email, password);
     setLoading(false);
   };

@@ -10,7 +10,7 @@ interface Review {
   user_id: number
   rating: number
   text: string
-  user?: { name: string }
+  user?: { name: string, avatar?: string }
 }
 
 export default function ReviewsPage() {
@@ -178,7 +178,7 @@ export default function ReviewsPage() {
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
                       <AvatarFallback className="bg-biosfera-primary text-white font-medium">
-                        {review.user?.name ? review.user.name[0] : '?'}
+                        {review.user?.avatar ? review.user.avatar : (review.user?.name ? review.user.name[0] : '?')}
                       </AvatarFallback>
                     </Avatar>
                     <div>
