@@ -39,81 +39,21 @@ export function Footer() {
               <h3 className="text-2xl font-bold text-black dark:text-white">Биосфера</h3>
             </div>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              Современная ветеринарная клиника, обеспечивающая качественную медицинскую помощь домашним животным с 2009 года.
+              Современная ветеринарная клиника, обеспечивающая качественную медицинскую помощь домашним животным с 2004 года.
             </p>
             <div className="flex space-x-4">
               <a 
                 href="https://vk.com/biosre" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-[#4680C2] rounded-lg flex items-center justify-center hover:bg-[#4680C2]/80 transition-colors"
+                className="w-10 h-10 bg-[#0077FF] rounded-lg flex items-center justify-center hover:bg-[#4680C2]/80 transition-colors"
                 aria-label="ВКонтакте"
               >
-                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.723-1.033-1.01-1.49-.864-1.49.525v1.09c0 .295-.095.525-.936.525-1.876 0-3.965-1.132-5.427-3.243-2.214-3.154-2.82-5.532-2.82-6.024 0-.525.17-.76.695-.76h1.744c.52 0 .717.227.918.76.99 2.395 2.681 4.49 3.369 4.49.263 0 .379-.12.379-.78V9.806c-.09-1.433-.84-1.55-.84-2.063 0-.43.346-.863 1.11-.863h2.745c.46 0 .627.25.627.745v4.436c0 .456.205.658.53.658.263 0 .718-.202 1.745-1.76 1.033-1.558 1.795-3.532 1.795-3.532.133-.295.34-.525.863-.525h1.744c.695 0 .84.357.695.863-.315 1.183-2.05 3.925-2.05 3.925-.24.338-.33.506 0 .863 1.26 1.342 2.708 2.397 2.708 3.183 0 .525-.43.863-1.18.863z"/>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="24" height="24" rx="6" fill="#0077FF"/>
+                  <path d="M13.37 16.5C8.41 16.5 5.47 13.23 5.35 7.5H8.02C8.1 11.41 9.98 13.13 11.41 13.47V7.5H13.92V11.09C15.32 10.94 16.79 9.37 17.28 7.5H19.8C19.48 9.13 17.91 10.7 16.81 11.32C17.91 11.81 19.66 13.13 20.2 16.5H17.41C16.87 14.41 15.56 13.19 13.92 13.03V16.5H13.37Z" fill="white"/>
                 </svg>
               </a>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-10 h-10 p-0 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                asChild
-              >
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                  <Instagram className="h-5 w-5 text-[#E4405F] dark:text-white" />
-                </a>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-10 h-10 p-0 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                asChild
-              >
-                <a href="https://t.me/biosfera_vet" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
-                  <MessageCircle className="h-5 w-5 text-[#229ED9] dark:text-white" />
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          {/* Contact Info */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-black dark:text-white">Контакты</h4>
-            <div className="space-y-3">
-              <div className="flex items-start space-x-3">
-                <Phone className="h-5 w-5 text-biosfera-secondary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-gray-700 dark:text-gray-300">Главный офис:</p>
-                  <a href="tel:+78332123456" className="text-black dark:text-white hover:text-biosfera-secondary transition-colors">
-                    +7 (8332) 12-34-56
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Phone className="h-5 w-5 text-biosfera-secondary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-gray-700 dark:text-gray-300">Экстренная помощь 24/7:</p>
-                  <a href="tel:+78332654321" className="text-black dark:text-white hover:text-biosfera-secondary transition-colors">
-                    +7 (8332) 65-43-21
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Mail className="h-5 w-5 text-biosfera-secondary mt-0.5 flex-shrink-0" />
-                <div>
-                  <a href="mailto:info@biosfera-kirov.ru" className="text-black dark:text-white hover:text-biosfera-secondary transition-colors">
-                    info@biosfera-kirov.ru
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Clock className="h-5 w-5 text-biosfera-secondary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-gray-700 dark:text-gray-300">Режим работы:</p>
-                  <p className="text-black dark:text-white">Ежедневно 8:00 - 22:00</p>
-                  <p className="text-biosfera-secondary text-sm">Экстренная помощь 24/7</p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -121,7 +61,7 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-black dark:text-white">Наши филиалы</h4>
             <div className="space-y-2">
-              {branches.slice(0, 4).map((branch, index) => (
+              {branches.map((branch, index) => (
                 <button
                   key={index}
                   onClick={() => handleBranchClick(branch)}
@@ -131,25 +71,6 @@ export function Footer() {
                   <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white">{branch}</span>
                 </button>
               ))}
-              <button
-                onClick={() => branches.slice(4).forEach(branch => handleBranchClick(branch))}
-                className="text-sm text-biosfera-secondary hover:text-biosfera-accent transition-colors"
-              >
-                + еще {branches.length - 4} филиала
-              </button>
-            </div>
-          </div>
-
-          {/* Services */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-black dark:text-white">Услуги</h4>
-            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-              <div className="hover:text-biosfera-secondary dark:hover:text-white transition-colors cursor-pointer">Терапия</div>
-              <div className="hover:text-biosfera-secondary dark:hover:text-white transition-colors cursor-pointer">Хирургия</div>
-              <div className="hover:text-biosfera-secondary dark:hover:text-white transition-colors cursor-pointer">Диагностика</div>
-              <div className="hover:text-biosfera-secondary dark:hover:text-white transition-colors cursor-pointer">Профилактика</div>
-              <div className="hover:text-biosfera-secondary dark:hover:text-white transition-colors cursor-pointer">Стоматология</div>
-              <div className="hover:text-biosfera-secondary dark:hover:text-white transition-colors cursor-pointer">Экстренная помощь</div>
             </div>
           </div>
         </div>
@@ -170,14 +91,6 @@ export function Footer() {
               Пользовательское соглашение
             </a>
           </div>
-        </div>
-
-        {/* Additional info */}
-        <div className="mt-6 p-4 bg-[#f3f6f4] dark:bg-gray-800 rounded-lg">
-          <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-            Имеются противопоказания. Необходима консультация специалиста. 
-            Информация на сайте не является публичной офертой.
-          </p>
         </div>
       </div>
     </footer>

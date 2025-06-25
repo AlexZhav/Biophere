@@ -8,7 +8,8 @@
     "dev:all": "concurrently \"npm run dev\" \"cd ../backend && uvicorn main:app --reload\"",
     "build": "yes | pnpm install && rm -rf node_modules/.vite-temp && tsc -b && vite build",
     "lint": "yes | pnpm install && eslint .",
-    "preview": "yes | pnpm install && vite preview"
+    "preview": "yes | pnpm install && vite preview",
+    "start": "vite preview --port $PORT"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -1,84 +1,163 @@
-import React from 'react'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import { HelpCircle } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/hooks/use-toast'
 
-const faqData = [
-  {
-    question: 'Как записаться на прием?',
-    answer: 'Вы можете записаться через онлайн форму или по телефону',
-  },
-  {
-    question: 'Какие услуги мы предоставляем?',
-    answer: 'Мы предоставляем полный спектр ветеринарных услуг: диагностика, лечение, профилактика, хирургия',
-  },
-  {
-    question: 'Могу ли я выбрать врача?',
-    answer: 'Да, мы учтём ваши пожелания при записи на прием',
-  },
-  {
-    question: 'Когда проводить вакцинацию?',
-    answer: 'Вакцинация рекомендуется с определённых возрастов согласно календарю прививок',
-  },
-  {
-    question: 'Что делать при подозрении на болезнь?',
-    answer: 'При первых признаках недомогания питомца запишитесь на прием к ветеринару',
-  },
-]
+interface Question {
+  id: number
+  user_id: number
+  text: string
+  created_at: string
+  user?: { name: string }
+}
 
-export function FAQSection() {
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+export default function FAQSection() {
+  const { user, token } = useAuth()
+  const { toast } = useToast()
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [form, setForm] = useState<{ text: string }>({ text: '' })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchQuestions = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/questions/`)
+      const data = await res.json()
+      setQuestions(data)
+    } catch {
+      setError('Ошибка загрузки вопросов')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchQuestions()
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    if (!token) return
+    try {
+      const res = await fetch(`${API_URL}/questions/${editingId ? editingId : ''}`, {
+        method: editingId ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error('Ошибка сохранения')
+      setForm({ text: '' })
+      setEditingId(null)
+      fetchQuestions()
+    } catch {
+      setError('Ошибка сохранения')
+    }
+  }
+
+  const handleEdit = (question: Question) => {
+    setForm({ text: question.text })
+    setEditingId(question.id)
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!token) return
+    if (!window.confirm('Удалить вопрос?')) return
+    try {
+      const res = await fetch(`${API_URL}/questions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) throw new Error('Ошибка удаления')
+      fetchQuestions()
+    } catch {
+      setError('Ошибка удаления')
+    }
+  }
+
   return (
-    <section id="faq" className="py-16 bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
+    <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 min-h-screen">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-biosfera-primary/10 rounded-full mb-4">
-            <HelpCircle className="h-8 w-8 text-biosfera-primary" />
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Вопрос–Ответ
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Ответы на часто задаваемые вопросы о наших услугах и работе клиники
-          </p>
-        </div>
-
-        <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {faqData.map((item, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-6 shadow-sm hover:shadow-md transition-shadow"
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">Вопрос-Ответ</h2>
+        {user && (
+          <form onSubmit={handleSubmit} className="mb-8 bg-white dark:bg-gray-900 rounded-xl shadow p-6 max-w-xl mx-auto">
+            <textarea
+              name="text"
+              value={form.text}
+              onChange={handleChange}
+              required
+              minLength={5}
+              maxLength={500}
+              placeholder="Ваш вопрос..."
+              className="w-full px-4 py-3 border rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-biosfera-primary shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 mb-4"
+            />
+            <button
+              type="submit"
+              className="bg-biosfera-primary hover:bg-biosfera-secondary text-white font-medium px-6 py-2 rounded-xl shadow"
+              disabled={loading}
+            >
+              {editingId ? 'Сохранить изменения' : 'Задать вопрос'}
+            </button>
+            {editingId && (
+              <button
+                type="button"
+                className="ml-4 text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                onClick={() => { setEditingId(null); setForm({ text: '' }) }}
               >
-                <AccordionTrigger className="text-left hover:no-underline py-6">
-                  <span className="text-lg font-medium text-gray-900 dark:text-white pr-4">
-                    {item.question}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="pb-6 pt-0">
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {item.answer}
+                Отмена
+              </button>
+            )}
+            {error && <div className="text-red-500 mt-2">{error}</div>}
+          </form>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          {questions.map((question) => (
+            <Card key={question.id} className="h-full hover:shadow-lg transition-shadow duration-300 border-0 shadow-md">
+              <CardContent className="p-6 h-full flex flex-col">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white">
+                      {question.user?.name || 'Пользователь'}
+                    </h4>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {new Date(question.created_at).toLocaleString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                  {user && user.id === question.user_id && (
+                    <div className="flex gap-2">
+                      <button
+                        className="flex items-center gap-1 text-biosfera-primary hover:text-biosfera-secondary"
+                        onClick={() => handleEdit(question)}
+                      >
+                        Редактировать
+                      </button>
+                      <button
+                        className="flex items-center gap-1 text-red-500 hover:text-red-700"
+                        onClick={() => handleDelete(question.id)}
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                    {question.text}
                   </p>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-
-        <div className="text-center mt-12">
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Не нашли ответ на свой вопрос?
-          </p>
-          <a
-            href="tel:+78332123456"
-            className="inline-flex items-center justify-center px-6 py-3 bg-biosfera-primary text-white rounded-lg hover:bg-biosfera-primary/90 transition-colors font-medium"
-          >
-            Позвонить нам
-          </a>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>

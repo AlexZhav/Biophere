@@ -223,6 +223,20 @@ export function Header({ onNavigateToSection }: HeaderProps) {
                     {item.label}
                   </button>
                 ))}
+                <Link
+                  to="/specialists-page"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-md"
+                >
+                  Специалисты
+                </Link>
+                <Link
+                  to="/reviews-page"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-md"
+                >
+                  Отзывы
+                </Link>
 
                 <div className="pt-2 border-t">
                   <div className="text-sm font-medium text-muted-foreground mb-2">Филиалы:</div>

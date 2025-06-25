@@ -13,6 +13,8 @@ interface Review {
   user?: { name: string, avatar?: string }
 }
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 export default function ReviewsPage() {
   const { user, token } = useAuth()
   const { toast } = useToast()
@@ -27,7 +29,7 @@ export default function ReviewsPage() {
   const fetchReviews = async () => {
     setLoading(true)
     try {
-      const res = await fetch('http://localhost:8000/reviews/')
+      const res = await fetch(`${API_URL}/reviews/`)
       const data = await res.json()
       setReviews(data)
     } catch {
@@ -50,7 +52,7 @@ export default function ReviewsPage() {
     setError(null)
     if (!token) return
     try {
-      const res = await fetch(`http://localhost:8000/reviews/${editingId ? editingId : ''}`, {
+      const res = await fetch(`${API_URL}/reviews/${editingId ? editingId : ''}`, {
         method: editingId ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +88,7 @@ export default function ReviewsPage() {
     if (!token) return
     if (!window.confirm('Удалить отзыв?')) return
     try {
-      const res = await fetch(`http://localhost:8000/reviews/${id}`, {
+      const res = await fetch(`${API_URL}/reviews/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       })

@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_serializer
+from datetime import datetime
 
 class UserBase(BaseModel):
     name: str
@@ -10,8 +11,9 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     id: int
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
 class ReviewBase(BaseModel):
     rating: int
@@ -28,5 +30,29 @@ class ReviewRead(ReviewBase):
     id: int
     user_id: int
     user: UserRead | None = None
-    class Config:
-        orm_mode = True 
+    model_config = {
+        "from_attributes": True
+    }
+
+class QuestionBase(BaseModel):
+    text: str
+
+class QuestionCreate(QuestionBase):
+    pass
+
+class QuestionUpdate(BaseModel):
+    text: str | None = None
+
+class QuestionRead(QuestionBase):
+    id: int
+    user_id: int
+    user: UserRead | None = None
+    created_at: datetime
+
+    @field_serializer("created_at")
+    def serialize_created_at(self, value):
+        return value.isoformat() if value else None
+
+    model_config = {
+        "from_attributes": True
+    } 

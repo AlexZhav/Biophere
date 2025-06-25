@@ -2,7 +2,8 @@ import React, { useEffect, useCallback, useState } from 'react'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Header } from '@/components/Header'
 import { HeroSection } from '@/components/HeroSection'
-import { FAQSection } from '@/components/FAQSection'
+import FAQSection from '@/components/FAQSection'
+import FAQPreviewBlock from '@/components/FAQPreviewBlock'
 import { PriceSection } from '@/components/PriceSection'
 import { Footer } from '@/components/Footer'
 import { CookieConsent } from '@/components/CookieConsent'
@@ -638,7 +639,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<>
                   <section id="hero"><HeroSection /></section>
-                  <section id="faq"><FAQSection /></section>
+                  <section id="faq"><FAQPreviewBlock /></section>
                   <section id="prices"><PriceSection /></section>
                   <section id="main-specialists"><SpecialistsPreviewBlock /></section>
                   <section id="main-reviews"><ReviewsPreviewBlock /></section>
