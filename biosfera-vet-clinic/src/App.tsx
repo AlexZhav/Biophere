@@ -6,7 +6,6 @@ import FAQSection from '@/components/FAQSection'
 import FAQPreviewBlock from '@/components/FAQPreviewBlock'
 import { PriceSection } from '@/components/PriceSection'
 import { Footer } from '@/components/Footer'
-import { CookieConsent } from '@/components/CookieConsent'
 import { Toaster } from '@/components/ui/toaster'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { Stethoscope, Filter, XCircle, Pencil, Trash, Send } from 'lucide-react'
@@ -688,7 +687,6 @@ function App() {
               </Routes>
             </main>
             <Footer />
-            <CookieConsent />
             <Toaster />
           </div>
         </ThemeProvider>
