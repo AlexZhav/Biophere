@@ -9,11 +9,7 @@
       "build": "yes | pnpm install && rm -rf node_modules/.vite-temp && tsc -b && vite build",
       "lint": "yes | pnpm install && eslint .",
       "preview": "yes | pnpm install && vite preview",
-  <<<<<<< HEAD
-      "start": "vite preview --port $PORT"
-  =======
       "start": "vite preview --port $PORT --host 0.0.0.0"
-  >>>>>>> e4ee21422c2b1eb676be11b12ff6548e0e5f2189
     },
     "dependencies": {
       "@hookform/resolvers": "^3.10.0",
