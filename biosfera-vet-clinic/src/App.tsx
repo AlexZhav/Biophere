@@ -625,27 +625,60 @@ function App() {
                     <HeroSection />
                     <FAQPreviewBlock />
                     <SpecialistsPreviewBlock />
-                    <ReviewsPreviewBlock />
                     <PricePreviewBlock />
-                    {/* Кнопки прокрутки между секциями */}
-                    {currentMainSection < mainSectionIds.length - 1 && (
-                      <button
-                        onClick={() => scrollToSection(currentMainSection + 1)}
-                        className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
-                        title="Вниз к следующему разделу"
-                      >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                      </button>
-                    )}
-                    {currentMainSection > 0 && (
-                      <button
-                        onClick={() => scrollToSection(currentMainSection - 1)}
-                        className="fixed z-50 right-6 bottom-40 md:bottom-48 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
-                        title="Вверх к предыдущему разделу"
-                      >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
-                      </button>
-                    )}
+                    <ReviewsPreviewBlock />
+                    {/* Стрелки для перемещения между секциями */}
+                    {(() => {
+                      const sectionIds = [
+                        'home',
+                        'faq',
+                        'main-specialists',
+                        'main-prices',
+                        'main-reviews',
+                      ];
+                      const [currentSection, setCurrentSection] = React.useState(0);
+                      React.useEffect(() => {
+                        const handleScroll = () => {
+                          const offsets = sectionIds.map(id => {
+                            const el = document.getElementById(id);
+                            return el ? el.getBoundingClientRect().top : Infinity;
+                          });
+                          const index = offsets.findIndex(offset => offset > 80);
+                          setCurrentSection(index === -1 ? sectionIds.length - 1 : Math.max(0, index - 1));
+                        };
+                        window.addEventListener('scroll', handleScroll);
+                        handleScroll();
+                        return () => window.removeEventListener('scroll', handleScroll);
+                      }, []);
+                      const scrollToSection = (index) => {
+                        const el = document.getElementById(sectionIds[index]);
+                        if (el) {
+                          const headerHeight = 80;
+                          const top = el.offsetTop - headerHeight;
+                          window.scrollTo({ top, behavior: 'smooth' });
+                        }
+                      };
+                      return <>
+                        {currentSection < sectionIds.length - 1 && (
+                          <button
+                            onClick={() => scrollToSection(currentSection + 1)}
+                            className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
+                            title="Вниз к следующему разделу"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                          </button>
+                        )}
+                        {currentSection > 0 && (
+                          <button
+                            onClick={() => scrollToSection(currentSection - 1)}
+                            className="fixed z-50 right-6 bottom-40 md:bottom-48 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosfera-primary dark:text-biosfera-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosfera-primary hover:text-white dark:hover:bg-biosfera-secondary dark:hover:text-white"
+                            title="Вверх к предыдущему разделу"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+                          </button>
+                        )}
+                      </>;
+                    })()}
                   </>
                 } />
                 <Route path="/pricelist" element={<PricelistPage />} />
