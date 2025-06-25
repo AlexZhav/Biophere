@@ -1,6 +1,6 @@
-# TASK: Biosfera Veterinary Clinic Website Development
+# TASK: biosphere Veterinary Clinic Website Development
 
-## Objective: Build and deploy a two-theme (light/dark) responsive Russian website for Biosfera Veterinary Clinic
+## Objective: Build and deploy a two-theme (light/dark) responsive Russian website for biosphere Veterinary Clinic
 
 ## STEPs:
 [ ] STEP 1: Develop complete veterinary clinic website with all specified features and deploy immediately → Web Development STEP

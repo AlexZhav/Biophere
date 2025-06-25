@@ -10,12 +10,12 @@ from models import User, Review, Question
 # Импортировать и подключить роутеры позже
 # from routers import users, specialists, testimonials, faq
 
-app = FastAPI(title="Biosfera API")
+app = FastAPI(title="biosphere API")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://biosfera-frontend.onrender.com",  # адрес твоего фронта
+        "https://biosphere-frontend.onrender.com",  # адрес твоего фронта
         "http://localhost:5173"                    # для локальной разработки (можно убрать на проде)
     ],
     allow_credentials=True,
@@ -33,7 +33,7 @@ app.include_router(questions_router)
 
 @app.get("/")
 def root():
-    return {"message": "Biosfera API is running"}
+    return {"message": "biosphere API is running"}
 
 @app.post("/admin/clear_all")
 def clear_all():
