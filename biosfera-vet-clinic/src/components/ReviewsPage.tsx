@@ -1,79 +1,113 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Star, Quote } from 'lucide-react'
+import { Star, Quote, Pencil, Trash } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/hooks/use-toast'
 
-const reviews = [
-  {
-    id: 1,
-    name: 'Анна Петрова',
-    avatar: 'АП',
-    rating: 5,
-    date: '15 мая 2024',
-    text: 'Прекрасная клиника! Врачи очень внимательные и профессиональные. Мой кот выздоровел благодаря качественному лечению.',
-    pet: 'кот Мурзик',
-  },
-  {
-    id: 2,
-    name: 'Михаил Козлов',
-    avatar: 'МК',
-    rating: 4,
-    date: '8 мая 2024',
-    text: 'Отличный сервис и современное оборудование. Провели операцию моей собаке на высшем уровне.',
-    pet: 'собака Рекс',
-  },
-  {
-    id: 3,
-    name: 'Елена Волкова',
-    avatar: 'ЕВ',
-    rating: 5,
-    date: '2 мая 2024',
-    text: 'Замечательная клиника с квалифицированными специалистами. Быстро поставили диагноз и назначили эффективное лечение.',
-    pet: 'кошка Мася',
-  },
-  {
-    id: 4,
-    name: 'Александр Иванов',
-    avatar: 'АИ',
-    rating: 3,
-    date: '28 апреля 2024',
-    text: 'Врачи действительно любят животных, это видно сразу. Провели качественную диагностику и помогли моему попугаю.',
-    pet: 'попугай Кеша',
-  },
-  {
-    id: 5,
-    name: 'Мария Сидорова',
-    avatar: 'МС',
-    rating: 4,
-    date: '20 апреля 2024',
-    text: 'Спасибо огромное за спасение нашего хомячка! Профессионализм на высшем уровне, рекомендую всем!',
-    pet: 'хомяк Пушок',
-  },
-  {
-    id: 6,
-    name: 'Дмитрий Новиков',
-    avatar: 'ДН',
-    rating: 5,
-    date: '15 апреля 2024',
-    text: 'Отличная ветклиника! Удобная запись онлайн, вежливый персонал, чистые кабинеты.',
-    pet: 'кролик Снежок',
-  },
-]
+interface Review {
+  id: number
+  user_id: number
+  rating: number
+  text: string
+  user?: { name: string }
+}
 
 export default function ReviewsPage() {
+  const { user, token } = useAuth()
+  const { toast } = useToast()
+  const [reviews, setReviews] = useState<Review[]>([])
   const [search, setSearch] = useState('')
   const [rating, setRating] = useState('')
+  const [form, setForm] = useState<{ rating: number; text: string }>({ rating: 5, text: '' })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchReviews = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('http://localhost:8000/reviews/')
+      const data = await res.json()
+      setReviews(data)
+    } catch {
+      setError('Ошибка загрузки отзывов')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchReviews()
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    if (!token) return
+    try {
+      const res = await fetch(`http://localhost:8000/reviews/${editingId ? editingId : ''}`, {
+        method: editingId ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        if (res.status === 429) {
+          toast({
+            title: 'Слишком часто',
+            description: 'Можно оставлять отзыв не чаще, чем раз в 5 минут.',
+            variant: 'destructive',
+          })
+          return
+        }
+        throw new Error('Ошибка сохранения')
+      }
+      setForm({ rating: 5, text: '' })
+      setEditingId(null)
+      fetchReviews()
+    } catch {
+      setError('Ошибка сохранения')
+    }
+  }
+
+  const handleEdit = (review: Review) => {
+    setForm({ rating: review.rating, text: review.text })
+    setEditingId(review.id)
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!token) return
+    if (!window.confirm('Удалить отзыв?')) return
+    try {
+      const res = await fetch(`http://localhost:8000/reviews/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) throw new Error('Ошибка удаления')
+      fetchReviews()
+    } catch {
+      setError('Ошибка удаления')
+    }
+  }
 
   const filtered = reviews.filter(r =>
     r.text.toLowerCase().includes(search.toLowerCase()) &&
     (rating === '' || r.rating === Number(rating))
   )
 
-  const renderStars = (rating: number) => {
+  const renderStars = (rating: number, onClick?: (n: number) => void) => {
     return [...Array(5)].map((_, index) => (
       <Star
         key={index}
-        className={`h-4 w-4 ${index < rating ? 'text-biosfera-warm fill-biosfera-warm' : 'text-gray-300'}`}
+        className={`h-4 w-4 cursor-pointer ${index < rating ? 'text-biosfera-warm fill-biosfera-warm' : 'text-gray-300'}`}
+        onClick={onClick ? () => onClick(index + 1) : undefined}
       />
     ))
   }
@@ -102,6 +136,40 @@ export default function ReviewsPage() {
             <option value="1">1 звезда</option>
           </select>
         </div>
+        {user && (
+          <form onSubmit={handleSubmit} className="mb-8 bg-white dark:bg-gray-900 rounded-xl shadow p-6 max-w-xl mx-auto">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="mr-2 text-gray-700 dark:text-gray-200">Ваша оценка:</span>
+              {renderStars(form.rating, n => setForm(f => ({ ...f, rating: n })))}
+            </div>
+            <textarea
+              name="text"
+              value={form.text}
+              onChange={handleChange}
+              required
+              minLength={5}
+              maxLength={500}
+              placeholder="Ваш отзыв..."
+              className="w-full px-4 py-3 border rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-biosfera-primary shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 mb-4"
+            />
+            <button
+              type="submit"
+              className="bg-biosfera-primary hover:bg-biosfera-secondary text-white font-medium px-6 py-2 rounded-xl shadow"
+              disabled={loading}
+            >
+              {editingId ? 'Сохранить изменения' : 'Оставить отзыв'}
+            </button>
+            {editingId && (
+              <button
+                type="button"
+                className="ml-4 text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                onClick={() => { setEditingId(null); setForm({ rating: 5, text: '' }) }}
+              >
+                Отмена
+              </button>
+            )}
+          </form>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((review) => (
             <Card key={review.id} className="h-full hover:shadow-lg transition-shadow duration-300 border-0 shadow-md">
@@ -110,16 +178,13 @@ export default function ReviewsPage() {
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
                       <AvatarFallback className="bg-biosfera-primary text-white font-medium">
-                        {review.avatar}
+                        {review.user?.name ? review.user.name[0] : '?'}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white">
-                        {review.name}
+                        {review.user?.name || 'Пользователь'}
                       </h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {review.pet}
-                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1">
@@ -132,9 +197,22 @@ export default function ReviewsPage() {
                     {review.text}
                   </p>
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 text-right">
-                  {review.date}
-                </div>
+                {user && user.id === review.user_id && (
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      className="flex items-center gap-1 text-biosfera-primary hover:text-biosfera-secondary"
+                      onClick={() => handleEdit(review)}
+                    >
+                      <Pencil className="w-4 h-4" /> Редактировать
+                    </button>
+                    <button
+                      className="flex items-center gap-1 text-red-500 hover:text-red-700"
+                      onClick={() => handleDelete(review.id)}
+                    >
+                      <Trash className="w-4 h-4" /> Удалить
+                    </button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

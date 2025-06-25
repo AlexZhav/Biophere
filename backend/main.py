@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
 from auth import router as auth_router
 from routers.users import router as users_router
+from routers.reviews import router as reviews_router
 
 # Импортировать и подключить роутеры позже
 # from routers import users, specialists, testimonials, faq
@@ -28,6 +29,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(reviews_router)
 
 @app.get("/")
 def root():

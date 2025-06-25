@@ -11,4 +11,21 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     id: int
     class Config:
+        orm_mode = True
+
+class ReviewBase(BaseModel):
+    rating: int
+    text: str
+
+class ReviewCreate(ReviewBase):
+    pass
+
+class ReviewUpdate(BaseModel):
+    rating: int | None = None
+    text: str | None = None
+
+class ReviewRead(ReviewBase):
+    id: int
+    user_id: int
+    class Config:
         orm_mode = True 
