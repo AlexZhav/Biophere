@@ -65,10 +65,10 @@ export function HeroSection() {
             {/* Left column - Text content */}
             <div className="space-y-8">
               <div className="space-y-6">
-                <Badge variant="secondary" className="w-fit bg-biosphere-primary/10 text-biosphere-primary border-biosphere-primary/20">
+                {/* <Badge variant="secondary">
                   <Heart className="h-3 w-3 mr-1" />
                   Ветеринарная клиника №1 в Кирове
-                </Badge>
+                </Badge> */}
                 
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                   <span className="text-transparent bg-clip-text" style={{ background: 'linear-gradient(to right, rgb(2, 133, 162), rgb(76, 175, 80))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>

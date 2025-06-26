@@ -81,7 +81,6 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <div className="text-sm text-gray-700 dark:text-gray-400">
             <p>© {currentYear} Ветеринарная клиника "Биосфера". Все права защищены.</p>
-            <p className="mt-1">Лицензия на ветеринарную деятельность № ВЕТ-43-001234 от 15.03.2020</p>
           </div>
           <div className="flex space-x-6 text-sm">
             <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-biosphere-secondary dark:hover:text-white transition-colors">
