@@ -1,78 +1,9 @@
 import React, { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import specialists from './specialists-data'
 
-const specialists = [
-  {
-    id: 1,
-    name: 'Смирнова Анна Петровна',
-    position: 'Главный ветеринарный врач',
-    specialization: 'Терапия, диагностика',
-    experience: '15 лет',
-    workplace: 'ул. Солнечная, 19Б',
-    photo: '/images/specialists/doctor1.jpg',
-    bio: 'Опытный специалист в области ветеринарной терапии и диагностики.',
-  },
-  {
-    id: 2,
-    name: 'Козлов Михаил Андреевич',
-    position: 'Ветеринарный хирург',
-    specialization: 'Хирургия, травматология',
-    experience: '12 лет',
-    workplace: 'ул. Московская, 4',
-    photo: '/images/specialists/doctor2.jpg',
-    bio: 'Специализируется на сложных хирургических операциях.',
-  },
-  {
-    id: 3,
-    name: 'Волкова Елена Сергеевна',
-    position: 'Ветеринарный дерматолог',
-    specialization: 'Дерматология, аллергология',
-    experience: '8 лет',
-    workplace: 'ул. Молодой Гвардии, 2Д, Нововятский район',
-    photo: '/images/specialists/doctor3.webp',
-    bio: 'Эксперт по кожным заболеваниям и аллергическим реакциям у животных.',
-  },
-  {
-    id: 4,
-    name: 'Петров Алексей Николаевич',
-    position: 'Ветеринарный кардиолог',
-    specialization: 'Кардиология, УЗИ диагностика',
-    experience: '10 лет',
-    workplace: 'пр-т Строителей, 9, корпус 1',
-    photo: '/images/specialists/doctor4.jpg',
-    bio: 'Специалист по заболеваниям сердечно-сосудистой системы.',
-  },
-  {
-    id: 5,
-    name: 'Иванова Мария Викторовна',
-    position: 'Ветеринарный офтальмолог',
-    specialization: 'Офтальмология, микрохирургия глаза',
-    experience: '7 лет',
-    workplace: 'ул. Чернышевского, 7',
-    photo: '/images/specialists/doctor5.jpg',
-    bio: 'Занимается лечением заболеваний глаз у животных.',
-  },
-  {
-    id: 6,
-    name: 'Соколов Дмитрий Павлович',
-    position: 'Ветеринарный ортопед',
-    specialization: 'Ортопедия, неврология',
-    experience: '9 лет',
-    workplace: 'ул. Украинская, 18',
-    photo: '/images/specialists/doctor6.jpg',
-    bio: 'Специализируется на лечении заболеваний опорно-двигательного аппарата.',
-  },
-]
-
-const workplaces = [
-  'ул. Солнечная, 19Б',
-  'ул. Московская, 4',
-  'ул. Молодой Гвардии, 2Д, Нововятский район',
-  'пр-т Строителей, 9, корпус 1',
-  'ул. Чернышевского, 7',
-  'ул. Украинская, 18',
-]
+const workplaces: string[] = Array.from(new Set(specialists.map(s => s.workplace).filter(Boolean)))
 
 export default function SpecialistsPage() {
   const [search, setSearch] = useState('')
@@ -80,8 +11,8 @@ export default function SpecialistsPage() {
   const [workplace, setWorkplace] = useState('')
   const [position, setPosition] = useState('')
 
-  const specializations = Array.from(new Set(specialists.map(s => s.specialization)))
-  const positions = Array.from(new Set(specialists.map(s => s.position)))
+  const specializations: string[] = Array.from(new Set(specialists.map(s => s.specialization)))
+  const positions: string[] = Array.from(new Set(specialists.map(s => s.position)))
 
   const filtered = specialists.filter(s => {
     const matchesSearch =
@@ -111,54 +42,56 @@ export default function SpecialistsPage() {
             onChange={e => setSearch(e.target.value)}
             className="w-full px-6 py-3 border rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-biosphere-primary shadow-sm mb-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border-gray-300 dark:border-gray-700"
           />
-          <div className="flex flex-col md:flex-row gap-3 items-stretch">
-            <select
-              value={specialization}
-              onChange={e => setSpecialization(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-            >
-              <option value="">Специализация</option>
-              {specializations.map(spec => (
-                <option key={spec} value={spec}>{spec}</option>
-              ))}
-            </select>
-            <select
-              value={position}
-              onChange={e => setPosition(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-            >
-              <option value="">Должность</option>
-              {positions.map(pos => (
-                <option key={pos} value={pos}>{pos}</option>
-              ))}
-            </select>
-            <select
-              value={workplace}
-              onChange={e => setWorkplace(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-            >
-              <option value="">Место работы</option>
-              {workplaces.map(w => (
-                <option key={w} value={w}>{w}</option>
-              ))}
-            </select>
-            <button
-              onClick={resetFilters}
-              className="flex-1 px-4 py-2 rounded-lg border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900 hover:bg-red-100 dark:hover:bg-red-800 transition-colors text-sm font-medium"
-              style={{ minWidth: 0 }}
-            >
-              Сбросить фильтры
-            </button>
+          <div className="overflow-x-auto">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch max-w-full min-w-[320px]">
+              <select
+                value={specialization}
+                onChange={e => setSpecialization(e.target.value)}
+                className="flex-1 min-w-[200px] px-4 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
+              >
+                <option value="">Специализация</option>
+                {specializations.map((spec: string) => (
+                  <option key={spec} value={spec}>{spec}</option>
+                ))}
+              </select>
+              <select
+                value={position}
+                onChange={e => setPosition(e.target.value)}
+                className="flex-1 min-w-[200px] px-4 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
+              >
+                <option value="">Должность</option>
+                {positions.map((pos: string) => (
+                  <option key={pos} value={pos}>{pos}</option>
+                ))}
+              </select>
+              <select
+                value={workplace}
+                onChange={e => setWorkplace(e.target.value)}
+                className="flex-1 min-w-[200px] px-4 py-2 border rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
+              >
+                <option value="">Место работы</option>
+                {workplaces.map((w: string) => (
+                  <option key={w} value={w}>{w}</option>
+                ))}
+              </select>
+              <button
+                onClick={resetFilters}
+                className="flex-1 min-w-[150px] px-4 py-2 rounded-lg border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900 hover:bg-red-100 dark:hover:bg-red-800 transition-colors text-sm font-medium"
+                style={{ minWidth: 0 }}
+              >
+                Сбросить фильтры
+              </button>
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((specialist) => (
-            <Card key={specialist.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md">
+          {filtered.map((specialist, idx) => (
+            <Card key={specialist.name + String(idx)} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md">
               <CardContent className="p-6">
                 <div className="text-center mb-6">
                   <div className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden">
                     <img 
-                      src={specialist.photo} 
+                      src={specialist.photo.startsWith('/') ? specialist.photo : `/doctors/${specialist.photo}`}
                       alt={specialist.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -181,19 +114,20 @@ export default function SpecialistsPage() {
                   </p>
                 </div>
                 <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                  <div className="flex items-center">
-                    <span className="font-semibold">Опыт:</span>
-                    <span className="ml-2">{specialist.experience}</span>
-                  </div>
                   <div className="flex items-start">
                     <span className="font-semibold">Место работы:</span>
                     <span className="ml-2 leading-tight">{specialist.workplace}</span>
                   </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {specialist.bio}
-                  </p>
+                  <div className="flex items-start">
+                    <span className="font-semibold">Образование:</span>
+                    <span className="ml-2 leading-tight">{specialist.education}</span>
+                  </div>
+                  {specialist.extra_qual && (
+                    <div className="flex items-start">
+                      <span className="font-semibold">Доп. квалификации:</span>
+                      <span className="ml-2 leading-tight">{specialist.extra_qual}</span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
