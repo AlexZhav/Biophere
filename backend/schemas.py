@@ -20,6 +20,8 @@ class ReviewBase(BaseModel):
     rating: int
     text: str
     admin_reply: str | None = None
+    guest_name: str | None = None
+    guest_phone: str | None = None
 
 class ReviewCreate(ReviewBase):
     pass
@@ -30,7 +32,7 @@ class ReviewUpdate(BaseModel):
 
 class ReviewRead(ReviewBase):
     id: int
-    user_id: int
+    user_id: int | None = None
     user: UserRead | None = None
     model_config = {
         "from_attributes": True

@@ -15,7 +15,9 @@ class User(Base):
 class Review(Base):
     __tablename__ = 'reviews'
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    guest_name = Column(String, nullable=True)
+    guest_phone = Column(String, nullable=True)
     rating = Column(Integer, nullable=False)
     text = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

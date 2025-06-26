@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Star, Quote, Pencil, Trash } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
+import { GuestReviewModal } from './GuestReviewModal'
 
 interface Review {
   id: number
@@ -29,6 +30,7 @@ export default function ReviewsPage() {
   const [replyingId, setReplyingId] = useState<number | null>(null)
   const [replyText, setReplyText] = useState<string>('')
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [guestModalOpen, setGuestModalOpen] = useState(false)
 
   const fetchReviews = async () => {
     setLoading(true)
@@ -149,11 +151,18 @@ export default function ReviewsPage() {
   return (
     <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 min-h-screen">
       <div className="container mx-auto px-4">
+        {/* Кнопка для гостей */}
         {!user && (
-          <div className="text-center text-gray-500 text-sm mb-8">
-            Зарегистрируйтесь, чтобы написать свой отзыв!
+          <div className="mb-8 flex justify-center">
+            <button
+              className="bg-biosphere-primary hover:bg-biosphere-secondary text-white font-medium px-6 py-2 rounded-xl shadow"
+              onClick={() => setGuestModalOpen(true)}
+            >
+              Оставить отзыв
+            </button>
           </div>
         )}
+        <GuestReviewModal isOpen={guestModalOpen} onClose={() => setGuestModalOpen(false)} onSuccess={fetchReviews} />
         <div className="mb-8 flex flex-col md:flex-row gap-4 items-end">
           <input
             type="text"

@@ -64,4 +64,20 @@ def admin_reply_review(review_id: int, reply: str = Body(...), db: Session = Dep
     db_review.admin_reply = reply
     db.commit()
     db.refresh(db_review)
+    return db_review
+
+@router.post("/guest", response_model=schemas.ReviewRead)
+def create_guest_review(review: schemas.ReviewCreate, db: Session = Depends(get_db)):
+    if not review.guest_name or not review.guest_phone:
+        raise HTTPException(status_code=400, detail="Имя и телефон обязательны для гостевого отзыва")
+    db_review = Review(
+        user_id=None,
+        guest_name=review.guest_name,
+        guest_phone=review.guest_phone,
+        rating=review.rating,
+        text=review.text
+    )
+    db.add(db_review)
+    db.commit()
+    db.refresh(db_review)
     return db_review 
