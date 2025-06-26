@@ -96,7 +96,7 @@ export function Header({ onNavigateToSection }: HeaderProps) {
 
           {/* Right side - Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
-            {user ? (
+            {user && user.is_admin ? (
               <Button
                 variant="ghost"
                 onClick={handleLogout}
@@ -178,7 +178,7 @@ export function Header({ onNavigateToSection }: HeaderProps) {
                   variant="ghost"
                   className="w-full justify-start"
                   onClick={() => {
-                    if (user) {
+                    if (user && user.is_admin) {
                       handleLogout()
                       setIsMobileMenuOpen(false)
                     } else {
@@ -187,7 +187,7 @@ export function Header({ onNavigateToSection }: HeaderProps) {
                     }
                   }}
                 >
-                  {user ? 'Выйти' : 'Регистрация'}
+                  {user && user.is_admin ? 'Выйти' : 'Регистрация'}
                 </Button>
                 
                 {navigationItems.map((item) => (
