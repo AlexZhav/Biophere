@@ -22,6 +22,10 @@ import ReviewsPreviewBlock from './components/ReviewsPreviewBlock'
 import PricePreviewBlock from './components/PricePreviewBlock'
 import PricelistPage from './components/PricelistPage'
 import AdminLoginPage from './components/AdminLoginPage'
+import AboutEquipmentPage from './components/AboutEquipmentPage'
+import About24_7Page from './components/About24_7Page'
+import AboutDoctorsPage from './components/AboutDoctorsPage'
+import AboutBranchesPage from './components/AboutBranchesPage'
 
 const specialists = [
   {
@@ -686,6 +690,10 @@ function App() {
                 <Route path="/reviews-page" element={<ReviewsPage />} />
                 <Route path="/faq" element={<FAQSection />} />
                 <Route path="/admin" element={<AdminLoginPage />} />
+                <Route path="/about-equipment" element={<AboutEquipmentPage />} />
+                <Route path="/about-24-7" element={<About24_7Page />} />
+                <Route path="/about-doctors" element={<AboutDoctorsPage />} />
+                <Route path="/about-branches" element={<AboutBranchesPage />} />
               </Routes>
             </main>
             <Footer />

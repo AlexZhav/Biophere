@@ -37,8 +37,8 @@ export function Header({ onNavigateToSection }: HeaderProps) {
   const { toast } = useToast()
 
   const handleBranchClick = (branch: string) => {
-    const encodedAddress = encodeURIComponent(branch)
-    window.open(`https://maps.google.com/?q=${encodedAddress}`, '_blank')
+    const encodedAddress = encodeURIComponent('Киров, ' + branch.replace(/^Россия, г\. Киров, /, ''))
+    window.open(`https://yandex.ru/maps/?text=${encodedAddress}`, '_blank')
   }
 
   // Универсальная функция для перехода и скролла вверх

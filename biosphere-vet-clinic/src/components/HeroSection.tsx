@@ -16,6 +16,7 @@ import {
   FlaskConical
 } from 'lucide-react'
 import { BookingModal } from './BookingModal'
+import { Link } from 'react-router-dom'
 
 export function HeroSection() {
   const [isBookingOpen, setIsBookingOpen] = useState(false)
@@ -25,21 +26,25 @@ export function HeroSection() {
       icon: <Clock className="h-6 w-6" />,
       title: 'Работаем 24/7',
       description: 'Круглосуточная помощь вашим питомцам',
+      link: '/about-24-7',
     },
     {
       icon: <Shield className="h-6 w-6" />,
       title: 'Современное оборудование',
       description: 'Новейшие технологии диагностики',
+      link: '/about-equipment',
     },
     {
       icon: <Heart className="h-6 w-6" />,
       title: 'Опытные врачи',
       description: 'Более 50 специалистов',
+      link: '/about-doctors',
     },
     {
       icon: <MapPin className="h-6 w-6" />,
       title: '6 филиалов',
       description: 'Удобное расположение по городу',
+      link: '/about-branches',
     },
   ]
 
@@ -112,27 +117,29 @@ export function HeroSection() {
             {/* Right column - Features cards */}
             <div className="space-y-6">
               {features.map((feature, index) => (
-                <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
-                        {feature.icon}
+                <Link to={feature.link} key={index} className="block group">
+                  <Card className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                          {feature.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            {feature.title}
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-300">
+                            {feature.description}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                          {feature.title}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          {feature.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
 
               {/* Emergency Contact Card */}
-              <Card className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0">
+              <Card className="bg-gradient-to-r from-red-500/90 to-red-600/90 dark:from-red-500/70 dark:to-red-600/70 text-white border-0 shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
                     <div className="flex-shrink-0">
