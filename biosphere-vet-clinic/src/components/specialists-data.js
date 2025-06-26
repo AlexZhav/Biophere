@@ -57,6 +57,17 @@ specialists2.forEach(s => {
   }
 });
 
+// После формирования массива специалистов:
+specialists.forEach(s => {
+  s.workplace = s.workplace
+    .split(',')
+    .map(w => w.trim())
+    .filter(w => !/^((у\s*)?д\.?\s*\d+\s*\D*|д\.?\d+\s*\D*)$/i.test(w) && w.length > 5)
+    .map(w => w.replace(/,?\s*д\.?\s*\d+\s*\D*$/i, ''))
+    .filter(Boolean)
+    .join(', ')
+})
+
 export default specialists;
 
   
