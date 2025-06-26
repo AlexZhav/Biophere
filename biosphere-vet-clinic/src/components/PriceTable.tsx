@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import services from '../../../services-data.js';
+import services from './services-data.js';
 
 const sections = ['Все разделы', ...Array.from(new Set(services.map(s => s.section)))];
 
@@ -13,26 +13,26 @@ export default function PriceTable() {
   );
 
   // Группировка по разделам для отображения секций
-  const grouped = filtered.reduce((acc, item) => {
+  const grouped = filtered.reduce((acc: Record<string, typeof services>, item) => {
     if (!acc[item.section]) acc[item.section] = [];
     acc[item.section].push(item);
     return acc;
-  }, {} as Record<string, typeof services>);
+  }, {});
 
   return (
     <div className="overflow-x-auto rounded-lg shadow-md bg-white dark:bg-gray-900 p-4">
-      <div className="flex flex-col md:flex-row gap-2 mb-4 items-center">
+      <div className="flex flex-col md:flex-row gap-4 mb-6 items-end">
         <input
           type="text"
-          placeholder="Поиск..."
+          placeholder="Поиск по названию или примечанию..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded-md w-full md:w-1/2 focus:outline-none focus:ring focus:border-biosphere-primary text-black"
+          className="w-full md:w-1/2 px-6 py-3 border rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-biosphere-primary shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border-gray-300 dark:border-gray-700 mb-2 md:mb-0 transition-colors"
         />
         <select
           value={section}
           onChange={e => setSection(e.target.value)}
-          className="border px-3 py-2 rounded-md w-full md:w-1/3 focus:outline-none focus:ring focus:border-biosphere-primary"
+          className="w-full md:w-1/3 px-4 py-3 border rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-biosphere-primary shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 transition-colors"
         >
           {sections.map(sec => (
             <option key={sec} value={sec}>{sec}</option>
@@ -48,11 +48,11 @@ export default function PriceTable() {
         </thead>
         <tbody>
           {Object.entries(grouped).map(([sec, items]) => (
-            <React.Fragment key={sec}>
+            <React.Fragment key={String(sec)}>
               <tr>
                 <td colSpan={2} className="bg-biosphere-primary/10 font-semibold px-4 py-2 text-biosphere-primary">{sec}</td>
               </tr>
-              {items.map((item, idx) => (
+              {(items as typeof services).map((item, idx) => (
                 <tr key={idx}>
                   <td className="border-t px-4 py-2">
                     {item.name}

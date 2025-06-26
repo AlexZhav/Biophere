@@ -1,5 +1,4 @@
 import { DollarSign } from 'lucide-react'
-import { Footer } from './Footer'
 import PriceTable from './PriceTable'
 
 export default function PricelistPage() {
@@ -16,7 +15,6 @@ export default function PricelistPage() {
           <PriceTable />
         </div>
       </main>
-      <Footer />
     </div>
-  )
+  );
 } 
