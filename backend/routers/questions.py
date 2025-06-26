@@ -57,4 +57,19 @@ def admin_reply_question(question_id: int, reply: str = Body(...), db: Session =
     db_question.admin_reply = reply
     db.commit()
     db.refresh(db_question)
+    return db_question
+
+@router.post("/guest", response_model=schemas.QuestionRead)
+def create_guest_question(question: schemas.QuestionCreate, db: Session = Depends(get_db)):
+    if not question.guest_name or not question.guest_phone:
+        raise HTTPException(status_code=400, detail="Имя и телефон обязательны для гостевого вопроса")
+    db_question = Question(
+        user_id=None,
+        guest_name=question.guest_name,
+        guest_phone=question.guest_phone,
+        text=question.text
+    )
+    db.add(db_question)
+    db.commit()
+    db.refresh(db_question)
     return db_question 

@@ -41,6 +41,8 @@ class ReviewRead(ReviewBase):
 class QuestionBase(BaseModel):
     text: str
     admin_reply: str | None = None
+    guest_name: str | None = None
+    guest_phone: str | None = None
 
 class QuestionCreate(QuestionBase):
     pass
@@ -50,7 +52,7 @@ class QuestionUpdate(BaseModel):
 
 class QuestionRead(QuestionBase):
     id: int
-    user_id: int
+    user_id: int | None = None
     user: UserRead | None = None
     created_at: datetime
 

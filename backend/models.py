@@ -28,7 +28,9 @@ class Review(Base):
 class Question(Base):
     __tablename__ = 'questions'
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    guest_name = Column(String, nullable=True)
+    guest_phone = Column(String, nullable=True)
     text = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     admin_reply = Column(Text, nullable=True)

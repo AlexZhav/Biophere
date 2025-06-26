@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
+import { GuestQuestionModal } from './GuestQuestionModal'
 
 interface Question {
   id: number
@@ -25,6 +26,7 @@ export default function FAQSection() {
   const [replyingId, setReplyingId] = useState<number | null>(null)
   const [replyText, setReplyText] = useState<string>('')
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [guestModalOpen, setGuestModalOpen] = useState(false)
 
   const fetchQuestions = async () => {
     setLoading(true)
@@ -121,7 +123,18 @@ export default function FAQSection() {
     <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 min-h-screen">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">Вопрос-Ответ</h2>
-        {/* Блок для незарегистрированных пользователей удалён */}
+        {/* Кнопка для гостей */}
+        {!user && (
+          <div className="mb-8 flex justify-center">
+            <button
+              className="bg-biosphere-primary hover:bg-biosphere-secondary text-white font-medium px-6 py-2 rounded-xl shadow"
+              onClick={() => setGuestModalOpen(true)}
+            >
+              Задать вопрос
+            </button>
+          </div>
+        )}
+        <GuestQuestionModal isOpen={guestModalOpen} onClose={() => setGuestModalOpen(false)} onSuccess={fetchQuestions} />
         {user && (
           <form onSubmit={handleSubmit} className="mb-8 bg-white dark:bg-gray-900 rounded-xl shadow p-6 max-w-xl mx-auto">
             <textarea
