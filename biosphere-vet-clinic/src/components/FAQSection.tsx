@@ -24,6 +24,7 @@ export default function FAQSection() {
   const [error, setError] = useState<string | null>(null)
   const [replyingId, setReplyingId] = useState<number | null>(null)
   const [replyText, setReplyText] = useState<string>('')
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const fetchQuestions = async () => {
     setLoading(true)
@@ -41,6 +42,14 @@ export default function FAQSection() {
   useEffect(() => {
     fetchQuestions()
   }, [])
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 100);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -222,6 +231,15 @@ export default function FAQSection() {
             </Card>
           ))}
         </div>
+        {showScrollTop && (
+          <button
+            className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosphere-primary dark:text-biosphere-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosphere-primary hover:text-white dark:hover:bg-biosphere-secondary dark:hover:text-white"
+            title="Вверх"
+            onClick={scrollToTop}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+          </button>
+        )}
       </div>
     </section>
   )
