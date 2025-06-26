@@ -220,7 +220,7 @@ export default function FAQSection() {
                       {replyingId === question.id ? (
                         <div className="flex flex-col gap-2">
                           <textarea
-                            className="w-full border rounded p-2"
+                            className="w-full border rounded p-2 text-black dark:text-black"
                             value={replyText}
                             onChange={e => setReplyText(e.target.value)}
                             placeholder="Ответ администратора..."
