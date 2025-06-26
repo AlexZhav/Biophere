@@ -118,7 +118,7 @@ export function HeroSection() {
             <div className="space-y-6">
               {features.map((feature, index) => (
                 <Link to={feature.link} key={index} className="block group">
-                  <Card className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                  <Card className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm relative overflow-hidden">
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
@@ -133,6 +133,9 @@ export function HeroSection() {
                           </p>
                         </div>
                       </div>
+                      <span className="absolute right-4 bottom-4 px-3 py-1 bg-biosphere-primary text-white text-xs rounded-lg shadow opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none select-none">
+                        Подробнее
+                      </span>
                     </CardContent>
                   </Card>
                 </Link>
