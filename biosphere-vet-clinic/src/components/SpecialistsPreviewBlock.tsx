@@ -11,7 +11,7 @@ const specialists = [
     education: 'Московская Ветеринарная Академия',
     workplace: 'ул. Московская, д. 4',
     extra_qual: 'Кардиология, УЗИ-диагностика',
-    photo: '/doctors/olzhavoronkov.jpg',
+    photo: '../doctors/olzhavoronkov.jpg',
     bio: '',
   },
   {
