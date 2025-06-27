@@ -182,7 +182,7 @@ export default function SpecialistsPage() {
                   <div className="text-center mb-6">
                     <div className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden">
                       <img 
-                        src={specialist.photo.startsWith('/') ? specialist.photo : `/doctors/${specialist.photo}`}
+                        src={specialist.photo}
                         alt={specialist.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
