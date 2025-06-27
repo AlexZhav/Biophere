@@ -96,14 +96,24 @@ export function Header({ onNavigateToSection }: HeaderProps) {
 
           {/* Right side - Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
-            {user && user.is_admin ? (
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className="text-sm font-medium hover:text-biosphere-primary"
-              >
-                Выйти
-              </Button>
+            {user ? (
+              <>
+                {user.is_admin && (
+                  <Link
+                    to="/admin"
+                    className="text-sm font-medium hover:text-biosphere-primary transition-colors"
+                  >
+                    Админка
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="text-sm font-medium hover:text-biosphere-primary"
+                >
+                  Выйти
+                </Button>
+              </>
             ) : (
               <Button
                 variant="ghost"
