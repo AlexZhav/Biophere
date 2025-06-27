@@ -1,0 +1,3 @@
+del backend\app.db
+cd biosphere-vet-clinic
+npm run dev:all	

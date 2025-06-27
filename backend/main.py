@@ -7,17 +7,16 @@ from routers.reviews import router as reviews_router
 from routers.questions import router as questions_router
 from models import User, Review, Question
 
-# Импортировать и подключить роутеры позже
-# from routers import users, specialists, testimonials, faq
+# ВАЖНО: Для запуска на Render используйте команду:
+# uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+# (если main.py лежит в папке backend)
 
 app = FastAPI(title="biosphere API")
 
+# CORS: временно разрешаем все источники для теста (можно потом сузить)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://biosphere-frontend.onrender.com",  # адрес твоего фронта
-        "http://localhost:5173"                    # для локальной разработки (можно убрать на проде)
-    ],
+    allow_origins=["https://biosfera-frontend.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +29,10 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(reviews_router)
 app.include_router(questions_router)
+
+@app.on_event("startup")
+def on_startup():
+    print("=== BIOSPHERE API STARTED ===")
 
 @app.get("/")
 def root():
@@ -45,4 +48,5 @@ def clear_all():
     db.close()
     return {"status": "ok"}
 
-# TODO: Подключить роутеры для users, specialists, testimonials, faq 
+# TODO: Подключить роутеры для specialists, testimonials, faq, если они появятся в будущем
+
