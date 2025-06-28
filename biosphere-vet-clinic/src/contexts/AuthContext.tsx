@@ -66,7 +66,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ username: email, password }),
     });
-    if (!res.ok) throw new Error('Неверный email или пароль');
+    if (!res.ok) {
+      if (res.status === 403) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Администраторы должны использовать специальную страницу входа');
+      }
+      throw new Error('Неверный email или пароль');
+    }
     const data = await res.json();
     setToken(data.access_token);
     localStorage.setItem('token', data.access_token);

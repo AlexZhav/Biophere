@@ -15,7 +15,7 @@ const AdminLoginPage: React.FC = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/auth/token`, {
+      const response = await fetch(`${API_URL}/auth/admin/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
@@ -24,7 +24,8 @@ const AdminLoginPage: React.FC = () => {
         }),
       });
       if (!response.ok) {
-        setError('Не удачный вход');
+        const errorData = await response.json();
+        setError(errorData.detail || 'Неудачный вход');
         setLoading(false);
         return;
       }
@@ -34,7 +35,7 @@ const AdminLoginPage: React.FC = () => {
       navigate('/');
       setTimeout(() => window.location.reload(), 100);
     } catch (err) {
-      setError('Не удачный вход');
+      setError('Неудачный вход');
     } finally {
       setLoading(false);
     }

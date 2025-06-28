@@ -45,13 +45,35 @@ def get_user_by_email(db: Session, email: str):
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
-    is_admin = user.email == 'admin@biosphere.ru'
+    
+    # Все пользователи регистрируются как обычные (не админы)
     db_user = User(
         name=user.name,
         email=user.email,
         phone=user.phone,
         password_hash=get_password_hash(user.password),
-        is_admin=is_admin
+        is_admin=False  # Всегда False для обычной регистрации
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+@router.post('/admin/register', response_model=schemas.UserRead)
+def register_admin(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    if get_user_by_email(db, user.email):
+        raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
+    
+    # Проверяем специальный email для создания админа
+    if user.email != 'admin@biosphere.ru':
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+    
+    db_user = User(
+        name=user.name,
+        email=user.email,
+        phone=user.phone,
+        password_hash=get_password_hash(user.password),
+        is_admin=True  # Только для специального эндпоинта
     )
     db.add(db_user)
     db.commit()
@@ -63,6 +85,24 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     user = get_user_by_email(db, form_data.username)
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Неверный email или пароль")
+    
+    # Обычный вход не работает для админов
+    if user.is_admin:
+        raise HTTPException(status_code=403, detail="Администраторы должны использовать специальную страницу входа")
+    
+    access_token = create_access_token(data={"sub": str(user.id)})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post('/admin/token')
+def admin_login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = get_user_by_email(db, form_data.username)
+    if not user or not verify_password(form_data.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Неверный email или пароль")
+    
+    # Специальный вход только для админов
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="Доступ только для администраторов")
+    
     access_token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
 
