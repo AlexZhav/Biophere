@@ -54,10 +54,14 @@ export default function SpecialistsPage() {
       specialists
         .flatMap(s => (s.workplace ? s.workplace.split(',').map(x => x.trim()) : []))
         .filter(Boolean)
-        .filter(w => !/^д\s*\d+$/i.test(w) && !/^у д \d+$/i.test(w) && w.length > 5)
+        .filter(w => !/^((у\s*)?д\.?\s*\d+\s*[А-Яа-яA-Za-z]?)$/i.test(w) && w.length > 5)
     )
   )
   const positions = Array.from(new Set(specialists.map(s => s.position)))
+
+  // Получаем 6 уникальных должностей и 6 уникальных мест работы (филиалов)
+  const uniquePositions = positions.slice(0, 6);
+  const uniqueWorkplaces = allWorkplaces.slice(0, 6);
 
   const handleSpecChange = (spec: string) => {
     setSelectedSpecs(prev =>
@@ -151,7 +155,7 @@ export default function SpecialistsPage() {
           <div className="mb-8">
             <input
               type="text"
-              placeholder="Поиск по имени, специализации, должности, месту работы..."
+              placeholder="Поиск по имени, специализации, должности..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full px-6 py-3 border rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-biosphere-primary shadow-sm mb-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border-gray-300 dark:border-gray-700"
@@ -162,9 +166,12 @@ export default function SpecialistsPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className={filterBtnClass}>
-                      {selectedSpecs.length > 0
-                        ? `Специализация: ${selectedSpecs.join(', ')}`
-                        : 'Специализация'}
+                      Специализация
+                      {selectedSpecs.length > 0 && (
+                        <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          {selectedSpecs.length}
+                        </Badge>
+                      )}
                       <ChevronDown className="h-4 w-4 opacity-50 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -185,9 +192,12 @@ export default function SpecialistsPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className={filterBtnClass}>
-                      {selectedPosition
-                        ? `Должность: ${selectedPosition}`
-                        : 'Должность'}
+                      Должность
+                      {selectedPosition && (
+                        <Badge variant="secondary" className="ml-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                          1
+                        </Badge>
+                      )}
                       <ChevronDown className="h-4 w-4 opacity-50 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -208,9 +218,12 @@ export default function SpecialistsPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className={filterBtnClass}>
-                      {selectedWorkplaces.length > 0
-                        ? `Место работы: ${selectedWorkplaces.join(', ')}`
-                        : 'Место работы'}
+                      Место работы
+                      {selectedWorkplaces.length > 0 && (
+                        <Badge variant="secondary" className="ml-2 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                          {selectedWorkplaces.length}
+                        </Badge>
+                      )}
                       <ChevronDown className="h-4 w-4 opacity-50 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -347,6 +360,8 @@ export default function SpecialistsPage() {
         onSave={handleSaveSpecialist}
         onUpdate={handleUpdateSpecialist}
         mode={modalMode}
+        positions={uniquePositions}
+        workplaces={uniqueWorkplaces}
       />
 
       {/* Диалог подтверждения удаления */}

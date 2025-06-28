@@ -29,6 +29,7 @@ export default function FAQSection() {
   const [replyText, setReplyText] = useState<string>('')
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false)
+  const [timeUpdate, setTimeUpdate] = useState(0); // Для обновления времени каждую секунду
 
   const fetchQuestions = async () => {
     setLoading(true)
@@ -53,7 +54,59 @@ export default function FAQSection() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Обновляем время каждую секунду для отображения оставшегося времени редактирования
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeUpdate(prev => prev + 1);
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  // Функция для проверки, можно ли редактировать вопрос (5 минут после создания)
+  const canEditQuestion = (question: Question) => {
+    if (!user) return false
+    if (user.is_admin) return true // Админы могут редактировать всегда
+    if (question.user_id !== user.id) return false // Только автор вопроса
+    
+    const questionDate = new Date(question.created_at)
+    const now = new Date()
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000)
+    
+    return questionDate > fiveMinutesAgo
+  }
+
+  // Функция для проверки, можно ли удалить вопрос (5 минут после создания)
+  const canDeleteQuestion = (question: Question) => {
+    if (!user) return false
+    if (user.is_admin) return true // Админы могут удалять всегда
+    if (question.user_id !== user.id) return false // Только автор вопроса
+    
+    const questionDate = new Date(question.created_at)
+    const now = new Date()
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000)
+    
+    return questionDate > fiveMinutesAgo
+  }
+
+  // Функция для отображения оставшегося времени редактирования
+  const getEditTimeRemaining = (question: Question) => {
+    if (!user || user.is_admin || question.user_id !== user.id) return null
+    
+    const questionDate = new Date(question.created_at)
+    const now = new Date()
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000)
+    
+    if (questionDate <= fiveMinutesAgo) return null
+    
+    const timeRemaining = new Date(questionDate.getTime() + 5 * 60 * 1000).getTime() - now.getTime()
+    const minutes = Math.floor(timeRemaining / (1000 * 60))
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000)
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -72,12 +125,18 @@ export default function FAQSection() {
         },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error('Ошибка сохранения')
+      if (!res.ok) {
+        if (res.status === 403) {
+          const errorData = await res.json()
+          throw new Error(errorData.detail || 'Время редактирования истекло')
+        }
+        throw new Error('Ошибка сохранения')
+      }
       setForm({ text: '' })
       setEditingId(null)
       fetchQuestions()
-    } catch {
-      setError('Ошибка сохранения')
+    } catch (error: any) {
+      setError(error.message || 'Ошибка сохранения')
     }
   }
 
@@ -94,10 +153,16 @@ export default function FAQSection() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (!res.ok) throw new Error('Ошибка удаления')
+      if (!res.ok) {
+        if (res.status === 403) {
+          const errorData = await res.json()
+          throw new Error(errorData.detail || 'Время удаления истекло')
+        }
+        throw new Error('Ошибка удаления')
+      }
       fetchQuestions()
-    } catch {
-      setError('Ошибка удаления')
+    } catch (error: any) {
+      setError(error.message || 'Ошибка удаления')
     }
   }
 
@@ -181,7 +246,7 @@ export default function FAQSection() {
                       {new Date(question.created_at).toLocaleString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
-                  {user && question.user_id && user.id === question.user_id && (
+                  {user && question.user_id && user.id === question.user_id && canEditQuestion(question) && (
                     <div className="flex gap-2">
                       <button
                         className="flex items-center gap-1 text-biosphere-primary hover:text-biosphere-secondary"
@@ -195,10 +260,41 @@ export default function FAQSection() {
                       >
                         Удалить
                       </button>
+                      {getEditTimeRemaining(question) && (
+                        <span className="text-xs text-orange-600 dark:text-orange-400">
+                          Осталось: {getEditTimeRemaining(question)}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {user && question.user_id && user.id === question.user_id && !canEditQuestion(question) && canDeleteQuestion(question) && (
+                    <div className="flex gap-2">
+                      <button
+                        className="flex items-center gap-1 text-red-500 hover:text-red-700"
+                        onClick={() => handleDelete(question.id)}
+                      >
+                        Удалить
+                      </button>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        Редактирование недоступно
+                      </span>
+                    </div>
+                  )}
+                  {user && question.user_id && user.id === question.user_id && !canEditQuestion(question) && !canDeleteQuestion(question) && (
+                    <div className="flex gap-2">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        Редактирование и удаление недоступны
+                      </span>
                     </div>
                   )}
                   {user && user.is_admin && (!question.user_id || user.id !== question.user_id) && (
                     <div className="flex gap-2">
+                      <button
+                        className="flex items-center gap-1 text-biosphere-primary hover:text-biosphere-secondary"
+                        onClick={() => handleEdit(question)}
+                      >
+                        Редактировать
+                      </button>
                       <button
                         className="flex items-center gap-1 text-red-500 hover:text-red-700"
                         onClick={() => handleDelete(question.id)}

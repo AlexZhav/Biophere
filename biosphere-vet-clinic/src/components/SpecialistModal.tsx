@@ -13,6 +13,8 @@ interface SpecialistModalProps {
   onSave: (specialist: Omit<Specialist, 'id'>) => Promise<void>;
   onUpdate?: (id: number, specialist: Partial<Specialist>) => Promise<void>;
   mode: 'create' | 'edit';
+  positions: string[];
+  workplaces: string[];
 }
 
 export default function SpecialistModal({
@@ -21,7 +23,9 @@ export default function SpecialistModal({
   specialist,
   onSave,
   onUpdate,
-  mode
+  mode,
+  positions = [],
+  workplaces = []
 }: SpecialistModalProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -129,11 +133,17 @@ export default function SpecialistModal({
               <Label htmlFor="position">Должность *</Label>
               <Input
                 id="position"
+                list="positions-list"
                 value={formData.position}
-                onChange={(e) => handleChange('position', e.target.value)}
+                onChange={e => handleChange('position', e.target.value)}
                 placeholder="Ветеринарный врач"
                 className={errors.position ? 'border-red-500' : ''}
               />
+              <datalist id="positions-list">
+                {positions.map(pos => (
+                  <option key={pos} value={pos} />
+                ))}
+              </datalist>
               {errors.position && <p className="text-red-500 text-sm mt-1">{errors.position}</p>}
             </div>
           </div>
@@ -151,13 +161,18 @@ export default function SpecialistModal({
 
           <div>
             <Label htmlFor="workplace">Место работы</Label>
-            <Textarea
+            <Input
               id="workplace"
+              list="workplaces-list"
               value={formData.workplace}
-              onChange={(e) => handleChange('workplace', e.target.value)}
+              onChange={e => handleChange('workplace', e.target.value)}
               placeholder="ул. Московская, д. 4"
-              rows={2}
             />
+            <datalist id="workplaces-list">
+              {workplaces.map(w => (
+                <option key={w} value={w} />
+              ))}
+            </datalist>
           </div>
 
           <div>
