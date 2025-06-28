@@ -43,6 +43,7 @@ class QuestionBase(BaseModel):
     admin_reply: str | None = None
     guest_name: str | None = None
     guest_phone: str | None = None
+    is_read: bool = False
 
 class QuestionCreate(QuestionBase):
     pass

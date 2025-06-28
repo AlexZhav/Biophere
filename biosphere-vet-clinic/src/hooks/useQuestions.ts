@@ -8,6 +8,7 @@ export interface Question {
   text: string;
   created_at: string;
   admin_reply?: string;
+  is_read: boolean;
   user?: {
     id: number;
     name: string;
@@ -37,9 +38,48 @@ export function useQuestions() {
     }
   };
 
+  const markAsRead = async (questionId: number) => {
+    try {
+      const res = await fetch(`${API_URL}/questions/${questionId}/read`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (!res.ok) throw new Error("Ошибка отметки как прочитанного");
+      await fetchQuestions(); // Обновляем список
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
+  const markAsUnread = async (questionId: number) => {
+    try {
+      const res = await fetch(`${API_URL}/questions/${questionId}/unread`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (!res.ok) throw new Error("Ошибка отметки как непрочитанного");
+      await fetchQuestions(); // Обновляем список
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
   useEffect(() => {
     fetchQuestions();
   }, [API_URL]);
 
-  return { questions, loading, error, refetch: fetchQuestions };
+  return { 
+    questions, 
+    loading, 
+    error, 
+    refetch: fetchQuestions,
+    markAsRead,
+    markAsUnread
+  };
 } 

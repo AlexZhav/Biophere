@@ -34,6 +34,7 @@ class Question(Base):
     text = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     admin_reply = Column(Text, nullable=True)
+    is_read = Column(Boolean, default=False, nullable=False)
 
     user = relationship('User', backref='questions')
 

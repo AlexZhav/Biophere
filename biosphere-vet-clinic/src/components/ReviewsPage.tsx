@@ -8,7 +8,9 @@ import { GuestReviewModal } from './GuestReviewModal'
 
 interface Review {
   id: number
-  user_id: number
+  user_id?: number
+  guest_name?: string
+  guest_phone?: string
   rating: number
   text: string
   user?: { name: string, avatar?: string }
@@ -226,12 +228,12 @@ export default function ReviewsPage() {
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
                       <AvatarFallback className="bg-biosphere-primary text-white font-medium">
-                        {review.user?.avatar ? review.user.avatar : (review.user?.name ? review.user.name[0] : '?')}
+                        {review.user?.avatar ? review.user.avatar : (review.user?.name ? review.user.name[0] : (review.guest_name ? review.guest_name[0] : '?'))}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white">
-                        {review.user?.name || 'Пользователь'}
+                        {review.user?.name || review.guest_name || 'Пользователь'}
                       </h4>
                     </div>
                   </div>
@@ -272,12 +274,14 @@ export default function ReviewsPage() {
                 </div>
                 {user && (user.id === review.user_id || user.is_admin) && (
                   <div className="flex gap-2 mt-2">
-                    <button
-                      className="flex items-center gap-1 text-biosphere-primary hover:text-biosphere-secondary"
-                      onClick={() => handleEdit(review)}
-                    >
-                      <Pencil className="w-4 h-4" /> Редактировать
-                    </button>
+                    {user.id === review.user_id && (
+                      <button
+                        className="flex items-center gap-1 text-biosphere-primary hover:text-biosphere-secondary"
+                        onClick={() => handleEdit(review)}
+                      >
+                        <Pencil className="w-4 h-4" /> Редактировать
+                      </button>
+                    )}
                     <button
                       className="flex items-center gap-1 text-red-500 hover:text-red-700"
                       onClick={() => handleDelete(review.id)}

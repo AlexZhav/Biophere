@@ -25,7 +25,8 @@ def create_review(review: schemas.ReviewCreate, db: Session = Depends(get_db), c
 def get_reviews(db: Session = Depends(get_db)):
     reviews = db.query(Review).all()
     for r in reviews:
-        r.user  # подгружаем user
+        if r.user_id:  # подгружаем user только если user_id не None
+            r.user
     return reviews
 
 @router.put("/{review_id}", response_model=schemas.ReviewRead)

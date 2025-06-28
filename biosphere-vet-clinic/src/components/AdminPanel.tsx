@@ -19,6 +19,7 @@ import {
   Edit,
   Trash2,
   Eye,
+  EyeOff,
   Calendar,
   TrendingUp,
   Activity,
@@ -42,7 +43,7 @@ export default function AdminPanel() {
   const navigate = useNavigate();
   const { specialists, loading: specialistsLoading, createSpecialist, updateSpecialist, deleteSpecialist } = useSpecialists();
   const { reviews, loading: reviewsLoading } = useReviews();
-  const { questions, loading: questionsLoading } = useQuestions();
+  const { questions, loading: questionsLoading, markAsRead, markAsUnread } = useQuestions();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
@@ -55,6 +56,7 @@ export default function AdminPanel() {
     totalSpecialists: specialists.length,
     totalReviews: reviews.length,
     totalQuestions: questions.length,
+    unreadQuestions: questions.filter(q => !q.is_read).length,
     activeUsers: specialists.length + Math.floor(reviews.length * 0.3), // Примерная оценка активных пользователей
     monthlyGrowth: Math.round((reviews.length / Math.max(specialists.length, 1)) * 10) / 10, // Рост на основе отзывов
     responseRate: questions.length > 0 ? Math.round((questions.filter(q => q.admin_reply).length / questions.length) * 100) : 0
@@ -260,6 +262,11 @@ export default function AdminPanel() {
                     <div>
                       <p className="text-purple-100">Вопросов</p>
                       <p className="text-3xl font-bold">{stats.totalQuestions}</p>
+                      {stats.unreadQuestions > 0 && (
+                        <p className="text-purple-200 text-sm mt-1">
+                          {stats.unreadQuestions} непрочитанных
+                        </p>
+                      )}
                     </div>
                     <HelpCircle className="h-8 w-8 text-purple-200" />
                   </div>
@@ -308,6 +315,12 @@ export default function AdminPanel() {
                       <span>Отзывов на специалиста</span>
                       <Badge variant="secondary" className="bg-purple-100 text-purple-800">
                         {stats.monthlyGrowth}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Непрочитанных вопросов</span>
+                      <Badge variant="secondary" className={stats.unreadQuestions > 0 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}>
+                        {stats.unreadQuestions}
                       </Badge>
                     </div>
                   </div>
@@ -496,6 +509,9 @@ export default function AdminPanel() {
                 <CardTitle className="flex items-center space-x-2">
                   <HelpCircle className="h-5 w-5" />
                   <span>Управление вопросами ({questions.length})</span>
+                  <Badge variant="secondary" className="ml-2">
+                    {questions.filter(q => !q.is_read).length} непрочитанных
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -506,20 +522,39 @@ export default function AdminPanel() {
                   </div>
                 ) : questions.length > 0 ? (
                   <div className="space-y-4">
-                    {questions.slice(0, 5).map((question) => (
-                      <div key={question.id} className="p-4 border rounded-lg">
+                    {questions.slice(0, 10).map((question) => (
+                      <div key={question.id} className={`p-4 border rounded-lg transition-all duration-200 ${
+                        !question.is_read ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700' : 'bg-white dark:bg-gray-800'
+                      }`}>
                         <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <p className="font-medium">
-                              {question.user?.name || question.guest_name || 'Гость'}
-                            </p>
-                            <span className="text-sm text-gray-500">
-                              {new Date(question.created_at).toLocaleDateString('ru-RU')}
-                            </span>
+                          <div className="flex items-center space-x-2">
+                            <div>
+                              <p className="font-medium">
+                                {question.user?.name || question.guest_name || 'Гость'}
+                              </p>
+                              <span className="text-sm text-gray-500">
+                                {new Date(question.created_at).toLocaleDateString('ru-RU')}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant={question.admin_reply ? "secondary" : "destructive"}>
+                                {question.admin_reply ? 'Отвечено' : 'Ожидает ответа'}
+                              </Badge>
+                              <Badge variant={question.is_read ? "outline" : "default"} className={question.is_read ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"}>
+                                {question.is_read ? 'Прочитано' : 'Непрочитано'}
+                              </Badge>
+                            </div>
                           </div>
-                          <Badge variant={question.admin_reply ? "secondary" : "destructive"}>
-                            {question.admin_reply ? 'Отвечено' : 'Ожидает ответа'}
-                          </Badge>
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => question.is_read ? markAsUnread(question.id) : markAsRead(question.id)}
+                              className={question.is_read ? "text-gray-600" : "text-blue-600"}
+                            >
+                              {question.is_read ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
                         </div>
                         <p className="text-gray-700 dark:text-gray-300 mb-3">{question.text}</p>
                         {question.admin_reply && (
@@ -530,9 +565,9 @@ export default function AdminPanel() {
                         )}
                       </div>
                     ))}
-                    {questions.length > 5 && (
+                    {questions.length > 10 && (
                       <p className="text-center text-gray-500 text-sm">
-                        Показано 5 из {questions.length} вопросов
+                        Показано 10 из {questions.length} вопросов
                       </p>
                     )}
                   </div>

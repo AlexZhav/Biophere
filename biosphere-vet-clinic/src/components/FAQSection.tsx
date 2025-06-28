@@ -6,7 +6,9 @@ import { GuestQuestionModal } from './GuestQuestionModal'
 
 interface Question {
   id: number
-  user_id: number
+  user_id?: number
+  guest_name?: string
+  guest_phone?: string
   text: string
   created_at: string
   user?: { name: string }
@@ -173,13 +175,13 @@ export default function FAQSection() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white">
-                      {question.user?.name || 'Пользователь'}
+                      {question.user?.name || question.guest_name || 'Пользователь'}
                     </h4>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       {new Date(question.created_at).toLocaleString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
-                  {user && user.id === question.user_id && (
+                  {user && question.user_id && user.id === question.user_id && (
                     <div className="flex gap-2">
                       <button
                         className="flex items-center gap-1 text-biosphere-primary hover:text-biosphere-secondary"
@@ -195,7 +197,7 @@ export default function FAQSection() {
                       </button>
                     </div>
                   )}
-                  {user && user.is_admin && user.id !== question.user_id && (
+                  {user && user.is_admin && (!question.user_id || user.id !== question.user_id) && (
                     <div className="flex gap-2">
                       <button
                         className="flex items-center gap-1 text-red-500 hover:text-red-700"

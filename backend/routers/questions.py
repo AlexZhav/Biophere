@@ -20,7 +20,8 @@ def create_question(question: schemas.QuestionCreate, db: Session = Depends(get_
 def get_questions(db: Session = Depends(get_db)):
     questions = db.query(Question).order_by(Question.created_at.desc()).all()
     for q in questions:
-        q.user
+        if q.user_id:  # подгружаем user только если user_id не None
+            q.user
     return questions
 
 @router.put("/{question_id}", response_model=schemas.QuestionRead)
@@ -70,6 +71,30 @@ def create_guest_question(question: schemas.QuestionCreate, db: Session = Depend
         text=question.text
     )
     db.add(db_question)
+    db.commit()
+    db.refresh(db_question)
+    return db_question
+
+@router.patch("/{question_id}/read", response_model=schemas.QuestionRead)
+def mark_question_as_read(question_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Требуются права администратора")
+    db_question = db.query(Question).filter(Question.id == question_id).first()
+    if not db_question:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    db_question.is_read = True
+    db.commit()
+    db.refresh(db_question)
+    return db_question
+
+@router.patch("/{question_id}/unread", response_model=schemas.QuestionRead)
+def mark_question_as_unread(question_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Требуются права администратора")
+    db_question = db.query(Question).filter(Question.id == question_id).first()
+    if not db_question:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    db_question.is_read = False
     db.commit()
     db.refresh(db_question)
     return db_question 
