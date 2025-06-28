@@ -22,6 +22,8 @@ import ReviewsPreviewBlock from './components/ReviewsPreviewBlock'
 import PricePreviewBlock from './components/PricePreviewBlock'
 import PricelistPage from './components/PricelistPage'
 import AdminLoginPage from './components/AdminLoginPage'
+import AdminPanel from './components/AdminPanel'
+import ProtectedRoute from './components/ProtectedRoute'
 import AboutEquipmentPage from './components/AboutEquipmentPage'
 import About24_7Page from './components/About24_7Page'
 import AboutDoctorsPage from './components/AboutDoctorsPage'
@@ -690,6 +692,7 @@ function App() {
                 <Route path="/reviews-page" element={<ReviewsPage />} />
                 <Route path="/faq" element={<FAQSection />} />
                 <Route path="/admin" element={<AdminLoginPage />} />
+                <Route path="/admin-panel" element={<ProtectedRoute requireAdmin={true}><AdminPanel /></ProtectedRoute>} />
                 <Route path="/about-equipment" element={<AboutEquipmentPage />} />
                 <Route path="/about-24-7" element={<About24_7Page />} />
                 <Route path="/about-doctors" element={<AboutDoctorsPage />} />

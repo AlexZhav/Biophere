@@ -100,7 +100,7 @@ export function Header({ onNavigateToSection }: HeaderProps) {
               <>
                 {user.is_admin && (
                   <Link
-                    to="/admin"
+                    to="/admin-panel"
                     className="text-sm font-medium hover:text-biosphere-primary transition-colors"
                   >
                     Админка
