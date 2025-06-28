@@ -1,41 +1,63 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import specialists from './specialists-data'
+import { Button } from '@/components/ui/button'
+import { useSpecialists } from '../hooks/useSpecialists'
+import { useAuth } from '../contexts/AuthContext'
+import SpecialistModal from './SpecialistModal'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { ChevronDown } from 'lucide-react'
-
-// Получаем уникальные специализации (разбиваем по запятым)
-const allSpecs = Array.from(
-  new Set(
-    specialists
-      .flatMap(s => s.specialization.split(',').map(x => x.trim()))
-      .filter(Boolean)
-  )
-)
-// Получаем уникальные места работы (разбиваем по запятым и по адресам)
-const allWorkplaces = Array.from(
-  new Set(
-    specialists
-      .flatMap(s => s.workplace.split(',').map(x => x.trim()))
-      .filter(Boolean)
-      .filter(w => !/^д\s*\d+$/i.test(w) && !/^у д \d+$/i.test(w) && w.length > 5)
-  )
-)
-const positions = Array.from(new Set(specialists.map(s => s.position)))
+import { ChevronDown, Edit, Trash2, Plus } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 export default function SpecialistsPage() {
+  const { specialists, loading, error, createSpecialist, updateSpecialist, deleteSpecialist } = useSpecialists()
+  const { user } = useAuth()
   const [search, setSearch] = useState('')
   const [selectedSpecs, setSelectedSpecs] = useState<string[]>([])
   const [selectedWorkplaces, setSelectedWorkplaces] = useState<string[]>([])
   const [selectedPosition, setSelectedPosition] = useState<string>('')
   const [showScrollTop, setShowScrollTop] = useState(false)
+  
+  // Модальные окна
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
+  const [selectedSpecialist, setSelectedSpecialist] = useState<any>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [specialistToDelete, setSpecialistToDelete] = useState<any>(null)
+
+  const isAdmin = user?.is_admin
+
+  // Получаем уникальные специализации и места работы из данных с бэка
+  const allSpecs = Array.from(
+    new Set(
+      specialists
+        .flatMap(s => (s.specialization ? s.specialization.split(',').map(x => x.trim()) : []))
+        .filter(Boolean)
+    )
+  )
+  const allWorkplaces = Array.from(
+    new Set(
+      specialists
+        .flatMap(s => (s.workplace ? s.workplace.split(',').map(x => x.trim()) : []))
+        .filter(Boolean)
+        .filter(w => !/^д\s*\d+$/i.test(w) && !/^у д \d+$/i.test(w) && w.length > 5)
+    )
+  )
+  const positions = Array.from(new Set(specialists.map(s => s.position)))
 
   const handleSpecChange = (spec: string) => {
     setSelectedSpecs(prev =>
@@ -54,10 +76,10 @@ export default function SpecialistsPage() {
   const filtered = specialists.filter(s => {
     const matchesSearch =
       s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.specialization.toLowerCase().includes(search.toLowerCase()) ||
-      s.position.toLowerCase().includes(search.toLowerCase())
-    const specArr = s.specialization.split(',').map(x => x.trim())
-    const workArr = s.workplace.split(',').map(x => x.trim())
+      (s.specialization || '').toLowerCase().includes(search.toLowerCase()) ||
+      (s.position || '').toLowerCase().includes(search.toLowerCase())
+    const specArr = s.specialization ? s.specialization.split(',').map(x => x.trim()) : []
+    const workArr = s.workplace ? s.workplace.split(',').map(x => x.trim()) : []
     const matchesSpec =
       selectedSpecs.length === 0 || selectedSpecs.some(spec => specArr.includes(spec))
     const matchesWork =
@@ -81,6 +103,46 @@ export default function SpecialistsPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  // Админ функции
+  const handleCreateSpecialist = () => {
+    setModalMode('create')
+    setSelectedSpecialist(null)
+    setModalOpen(true)
+  }
+
+  const handleEditSpecialist = (specialist: any) => {
+    setModalMode('edit')
+    setSelectedSpecialist(specialist)
+    setModalOpen(true)
+  }
+
+  const handleDeleteSpecialist = (specialist: any) => {
+    setSpecialistToDelete(specialist)
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (specialistToDelete) {
+      try {
+        await deleteSpecialist(specialistToDelete.id)
+        setDeleteDialogOpen(false)
+        setSpecialistToDelete(null)
+      } catch (error) {
+        console.error('Ошибка удаления:', error)
+      }
+    }
+  }
+
+  const handleSaveSpecialist = async (specialistData: any) => {
+    if (modalMode === 'create') {
+      await createSpecialist(specialistData)
+    }
+  }
+
+  const handleUpdateSpecialist = async (id: number, specialistData: any) => {
+    await updateSpecialist(id, specialistData)
+  }
 
   return (
     <>
@@ -175,65 +237,143 @@ export default function SpecialistsPage() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filtered.map((specialist, idx) => (
-              <Card key={specialist.name + String(idx)} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md">
-                <CardContent className="p-6">
-                  <div className="text-center mb-6">
-                    <div className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden">
-                      <img 
-                        src={specialist.photo}
-                        alt={specialist.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none'
-                          e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center')
-                          const fallback = document.createElement('div')
-                          fallback.innerHTML = `<svg class=\"h-12 w-12 text-white\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z\"/></svg>`
-                          e.currentTarget.parentElement?.appendChild(fallback)
-                        }}
-                      />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                      {specialist.name}
-                    </h3>
-                    <Badge variant="secondary" className="mb-2">
-                      {specialist.position}
-                    </Badge>
-                    <p className="text-sm text-biosphere-primary font-medium">
-                      {specialist.specialization}
-                    </p>
-                  </div>
-                  <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                    <div className="flex items-start">
-                      <span className="font-semibold">Место работы:</span>
-                      <span className="ml-2 leading-tight">{specialist.workplace}</span>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-semibold">Образование:</span>
-                      <span className="ml-2 leading-tight">{specialist.education}</span>
-                    </div>
-                    {specialist.extra_qual && (
-                      <div className="flex items-start">
-                        <span className="font-semibold">Доп. квалификации:</span>
-                        <span className="ml-2 leading-tight">{specialist.extra_qual}</span>
+          {loading ? (
+            <div className="text-center py-12 text-lg">Загрузка специалистов...</div>
+          ) : error ? (
+            <div className="text-center py-12 text-red-600">Ошибка: {error}</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Карточка "+" для админа */}
+              {isAdmin && (
+                <Card className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md border-dashed border-2 border-gray-300 dark:border-gray-600">
+                  <CardContent className="p-6">
+                    <div className="text-center mb-6">
+                      <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <Plus className="h-12 w-12 text-gray-500 dark:text-gray-400" />
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                        Добавить специалиста
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                        Создать новую карточку специалиста
+                      </p>
+                      <Button 
+                        onClick={handleCreateSpecialist}
+                        className="w-full bg-biosphere-primary hover:bg-biosphere-secondary"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Добавить
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {/* Карточки специалистов */}
+              {filtered.map((specialist, idx) => (
+                <Card key={specialist.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md relative">
+                  {/* Кнопки админа */}
+                  {isAdmin && (
+                    <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditSpecialist(specialist)}
+                        className="h-8 w-8 p-0 bg-white/90 dark:bg-gray-800/90"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteSpecialist(specialist)}
+                        className="h-8 w-8 p-0 bg-white/90 dark:bg-gray-800/90 text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  <CardContent className="p-6">
+                    <div className="text-center mb-6">
+                      <div className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden">
+                        <img 
+                          src={specialist.photo}
+                          alt={specialist.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                            e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center')
+                            const fallback = document.createElement('div')
+                            fallback.innerHTML = `<svg class=\"h-12 w-12 text-white\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z\"/></svg>`
+                            e.currentTarget.parentElement?.appendChild(fallback)
+                          }}
+                        />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                        {specialist.name}
+                      </h3>
+                      <Badge variant="secondary" className="mb-2">
+                        {specialist.position}
+                      </Badge>
+                      <div className="text-gray-500 dark:text-gray-400 text-sm mb-2">
+                        {specialist.specialization}
+                      </div>
+                      <div className="text-gray-500 dark:text-gray-400 text-xs">
+                        {specialist.workplace}
+                      </div>
+                      <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                        {specialist.education}
+                      </div>
+                      {specialist.extra_qual && (
+                        <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                          {specialist.extra_qual}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
-      {/* Кнопка "Вверх" */}
+      
+      {/* Модальное окно для создания/редактирования */}
+      <SpecialistModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        specialist={selectedSpecialist}
+        onSave={handleSaveSpecialist}
+        onUpdate={handleUpdateSpecialist}
+        mode={modalMode}
+      />
+
+      {/* Диалог подтверждения удаления */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удалить специалиста?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы уверены, что хотите удалить специалиста "{specialistToDelete?.name}"? 
+              Это действие нельзя отменить.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              Удалить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {showScrollTop && (
         <button
-          className="fixed z-50 right-6 bottom-24 md:bottom-32 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-colors bg-white dark:bg-gray-800 text-biosphere-primary dark:text-biosphere-secondary border border-gray-200 dark:border-gray-700 hover:bg-biosphere-primary hover:text-white dark:hover:bg-biosphere-secondary dark:hover:text-white"
-          title="Вверх"
           onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-biosphere-primary text-white shadow-lg hover:bg-biosphere-secondary transition-colors"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7"></path></svg>
+          ↑
         </button>
       )}
     </>

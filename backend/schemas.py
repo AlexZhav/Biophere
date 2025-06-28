@@ -62,4 +62,42 @@ class QuestionRead(QuestionBase):
 
     model_config = {
         "from_attributes": True
+    }
+
+class SpecialistBase(BaseModel):
+    name: str
+    position: str
+    specialization: str | None = None
+    workplace: str | None = None
+    education: str | None = None
+    extra_qual: str | None = None
+    photo: str | None = None
+
+class SpecialistCreate(SpecialistBase):
+    pass
+
+class SpecialistUpdate(BaseModel):
+    name: str | None = None
+    position: str | None = None
+    specialization: str | None = None
+    workplace: str | None = None
+    education: str | None = None
+    extra_qual: str | None = None
+    photo: str | None = None
+
+class SpecialistRead(SpecialistBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    @field_serializer("created_at")
+    def serialize_created_at(self, value):
+        return value.isoformat() if value else None
+
+    @field_serializer("updated_at")
+    def serialize_updated_at(self, value):
+        return value.isoformat() if value else None
+
+    model_config = {
+        "from_attributes": True
     } 

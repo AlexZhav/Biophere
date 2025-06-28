@@ -5,7 +5,8 @@ from auth import router as auth_router
 from routers.users import router as users_router
 from routers.reviews import router as reviews_router
 from routers.questions import router as questions_router
-from models import User, Review, Question
+from routers.specialists import router as specialists_router
+from models import User, Review, Question, Specialist
 
 # ВАЖНО: Для запуска на Render используйте команду:
 # uvicorn backend.main:app --host 0.0.0.0 --port $PORT
@@ -13,10 +14,14 @@ from models import User, Review, Question
 
 app = FastAPI(title="biosphere API")
 
-# CORS: временно разрешаем все источники для теста (можно потом сузить)
+# CORS: разрешаем локальную разработку и продакшн
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://biosfera-frontend.onrender.com"],
+    allow_origins=[
+        "https://biosfera-frontend.onrender.com",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,6 +34,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(reviews_router)
 app.include_router(questions_router)
+app.include_router(specialists_router)
 
 @app.on_event("startup")
 def on_startup():
@@ -44,6 +50,7 @@ def clear_all():
     db.query(Review).delete()
     db.query(Question).delete()
     db.query(User).delete()
+    db.query(Specialist).delete()
     db.commit()
     db.close()
     return {"status": "ok"}

@@ -35,4 +35,17 @@ class Question(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     admin_reply = Column(Text, nullable=True)
 
-    user = relationship('User', backref='questions') 
+    user = relationship('User', backref='questions')
+
+class Specialist(Base):
+    __tablename__ = 'specialists'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    position = Column(String, nullable=False)
+    specialization = Column(Text, nullable=True)
+    workplace = Column(Text, nullable=True)
+    education = Column(String, nullable=True)
+    extra_qual = Column(Text, nullable=True)
+    photo = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False) 
