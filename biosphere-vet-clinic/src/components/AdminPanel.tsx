@@ -22,7 +22,6 @@ import {
   EyeOff,
   Calendar,
   TrendingUp,
-  Activity,
   Shield,
   Database,
   Star
@@ -56,10 +55,15 @@ export default function AdminPanel() {
     totalSpecialists: specialists.length,
     totalReviews: reviews.length,
     totalQuestions: questions.length,
-    unreadQuestions: questions.filter(q => !q.is_read).length,
-    activeUsers: specialists.length + Math.floor(reviews.length * 0.3), // Примерная оценка активных пользователей
-    monthlyGrowth: Math.round((reviews.length / Math.max(specialists.length, 1)) * 10) / 10, // Рост на основе отзывов
-    responseRate: questions.length > 0 ? Math.round((questions.filter(q => q.admin_reply).length / questions.length) * 100) : 0
+    averageRating: reviews.length > 0 
+      ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+      : '0.0',
+    responseTime: questions.length > 0 ? Math.round((questions.filter(q => q.admin_reply).length / questions.length) * 24) : 0, // Время ответа в часах
+    newQuestionsThisWeek: questions.filter(q => {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return new Date(q.created_at) > weekAgo;
+    }).length // Новые вопросы за неделю
   };
 
   // Реальная активность на основе данных
@@ -173,6 +177,57 @@ export default function AdminPanel() {
     await updateSpecialist(id, specialistData);
   };
 
+  // Функции для управления системой
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  
+  const handleExportData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/admin/export`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `biosphere_export_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    } catch (error) {
+      console.error('Ошибка экспорта:', error);
+    }
+  };
+
+  const handleCleanupData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/admin/cleanup`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        alert('Данные успешно очищены');
+      } else {
+        alert('Ошибка при очистке данных');
+      }
+    } catch (error) {
+      console.error('Ошибка очистки:', error);
+      alert('Ошибка при очистке данных');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
@@ -262,11 +317,6 @@ export default function AdminPanel() {
                     <div>
                       <p className="text-purple-100">Вопросов</p>
                       <p className="text-3xl font-bold">{stats.totalQuestions}</p>
-                      {stats.unreadQuestions > 0 && (
-                        <p className="text-purple-200 text-sm mt-1">
-                          {stats.unreadQuestions} непрочитанных
-                        </p>
-                      )}
                     </div>
                     <HelpCircle className="h-8 w-8 text-purple-200" />
                   </div>
@@ -277,10 +327,10 @@ export default function AdminPanel() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-orange-100">Активных пользователей</p>
-                      <p className="text-3xl font-bold">{stats.activeUsers}</p>
+                      <p className="text-orange-100">Средний рейтинг</p>
+                      <p className="text-3xl font-bold">{stats.averageRating}</p>
                     </div>
-                    <Activity className="h-8 w-8 text-orange-200" />
+                    <Star className="h-8 w-8 text-orange-200" />
                   </div>
                 </CardContent>
               </Card>
@@ -291,36 +341,33 @@ export default function AdminPanel() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <TrendingUp className="h-5 w-5" />
-                    <span>Статистика роста</span>
+                    <span>Показатели эффективности</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span>Средний рейтинг</span>
+                      <span>Время ответа (часы)</span>
                       <Badge variant="secondary" className="bg-green-100 text-green-800">
-                        {reviews.length > 0 
-                          ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-                          : '0.0'
-                        } ⭐
+                        {stats.responseTime}ч
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span>Скорость ответов</span>
+                      <span>Новые вопросы за неделю</span>
                       <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                        {stats.responseRate}%
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>Отзывов на специалиста</span>
-                      <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                        {stats.monthlyGrowth}
+                        {stats.newQuestionsThisWeek}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Непрочитанных вопросов</span>
-                      <Badge variant="secondary" className={stats.unreadQuestions > 0 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}>
-                        {stats.unreadQuestions}
+                      <Badge variant="secondary" className="bg-red-100 text-red-800">
+                        {questions.filter(q => !q.is_read).length}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Отзывов с ответами</span>
+                      <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                        {reviews.filter(r => r.admin_reply).length}
                       </Badge>
                     </div>
                   </div>
@@ -586,31 +633,24 @@ export default function AdminPanel() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Settings className="h-5 w-5" />
-                  <span>Настройки системы</span>
+                  <span>Управление системой</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
-                      <h4 className="font-medium">Уведомления</h4>
-                      <p className="text-sm text-gray-600">Получать уведомления о новых отзывах</p>
+                      <h4 className="font-medium">Экспорт данных</h4>
+                      <p className="text-sm text-gray-600">Экспорт специалистов, отзывов и вопросов</p>
                     </div>
-                    <Button variant="outline" size="sm">Настроить</Button>
+                    <Button variant="outline" size="sm" onClick={handleExportData}>Экспорт</Button>
                   </div>
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
-                      <h4 className="font-medium">Резервное копирование</h4>
-                      <p className="text-sm text-gray-600">Автоматическое резервное копирование данных</p>
+                      <h4 className="font-medium">Очистка данных</h4>
+                      <p className="text-sm text-gray-600">Удаление старых отзывов и вопросов</p>
                     </div>
-                    <Button variant="outline" size="sm">Настроить</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Безопасность</h4>
-                      <p className="text-sm text-gray-600">Настройки безопасности и доступа</p>
-                    </div>
-                    <Button variant="outline" size="sm">Настроить</Button>
+                    <Button variant="outline" size="sm" onClick={handleCleanupData}>Очистить</Button>
                   </div>
                 </div>
               </CardContent>
@@ -627,6 +667,8 @@ export default function AdminPanel() {
         onSave={handleSaveSpecialist}
         onUpdate={handleUpdateSpecialist}
         mode={modalMode}
+        positions={['Ветеринарный врач', 'Ветеринарный врач-хирург', 'Ветеринарный врач-терапевт', 'Ветеринарный врач-кардиолог', 'Ветеринарный врач-офтальмолог', 'Ветеринарный врач-дерматолог']}
+        workplaces={['ул. Московская, д. 4', 'ул. Ленина, д. 15', 'ул. Пушкина, д. 8', 'ул. Гагарина, д. 12', 'ул. Мира, д. 25', 'ул. Советская, д. 7']}
       />
 
       {/* Диалог подтверждения удаления */}
