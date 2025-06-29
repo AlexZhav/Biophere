@@ -1,6 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import ImageModal from './ImageModal'
 
 const specialists = [
   {
@@ -72,6 +74,19 @@ const specialists = [
 ]
 
 export default function SpecialistsPreviewBlock() {
+  // Состояние для модального окна просмотра фотографий
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<{src: string, alt: string, name: string} | null>(null)
+
+  const handleImageClick = (specialist: any) => {
+    setSelectedImage({
+      src: specialist.photo,
+      alt: specialist.name,
+      name: specialist.name
+    })
+    setImageModalOpen(true)
+  }
+
   return (
     <section id="main-specialists" className="py-16 bg-gradient-to-br from-white to-[#e3eaff] dark:bg-[#1f2937] dark:from-[#1f2937] dark:to-[#1f2937]">
       <div className="container mx-auto px-4">
@@ -81,7 +96,11 @@ export default function SpecialistsPreviewBlock() {
             <Card key={specialist.name + String(idx)} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md">
               <CardContent className="p-6">
                 <div className="text-center mb-6">
-                  <div className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden">
+                  <div 
+                    className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+                    onClick={() => handleImageClick(specialist)}
+                    title="Нажмите для просмотра в полном размере"
+                  >
                     <img 
                       src={specialist.photo} 
                       alt={specialist.name}
@@ -127,6 +146,20 @@ export default function SpecialistsPreviewBlock() {
           <Link to="/specialists-page" className="inline-block bg-biosphere-primary text-white px-6 py-3 rounded-lg font-medium shadow hover:bg-biosphere-secondary transition-colors">Смотреть всех специалистов</Link>
         </div>
       </div>
+
+      {/* Модальное окно для просмотра фотографий */}
+      {selectedImage && (
+        <ImageModal
+          isOpen={imageModalOpen}
+          onClose={() => {
+            setImageModalOpen(false)
+            setSelectedImage(null)
+          }}
+          imageSrc={selectedImage.src}
+          imageAlt={selectedImage.alt}
+          specialistName={selectedImage.name}
+        />
+      )}
     </section>
   )
 } 

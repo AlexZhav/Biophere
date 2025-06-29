@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useSpecialists } from '../hooks/useSpecialists'
 import { useAuth } from '../contexts/AuthContext'
 import SpecialistModal from './SpecialistModal'
@@ -22,6 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import ImageModal from './ImageModal'
 
 export default function SpecialistsPage() {
   const { specialists, loading, error, createSpecialist, updateSpecialist, deleteSpecialist } = useSpecialists()
@@ -38,6 +40,10 @@ export default function SpecialistsPage() {
   const [selectedSpecialist, setSelectedSpecialist] = useState<any>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [specialistToDelete, setSpecialistToDelete] = useState<any>(null)
+  
+  // Состояние для модального окна просмотра фотографий
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<{src: string, alt: string, name: string} | null>(null)
 
   const isAdmin = user?.is_admin
 
@@ -133,9 +139,18 @@ export default function SpecialistsPage() {
         setDeleteDialogOpen(false)
         setSpecialistToDelete(null)
       } catch (error) {
-        console.error('Ошибка удаления:', error)
+        console.error('Ошибка при удалении специалиста:', error)
       }
     }
+  }
+
+  const handleImageClick = (specialist: any) => {
+    setSelectedImage({
+      src: specialist.photo,
+      alt: specialist.name,
+      name: specialist.name
+    })
+    setImageModalOpen(true)
   }
 
   const handleSaveSpecialist = async (specialistData: any) => {
@@ -309,7 +324,11 @@ export default function SpecialistsPage() {
                   
                   <CardContent className="p-6">
                     <div className="text-center mb-6">
-                      <div className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden">
+                      <div 
+                        className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+                        onClick={() => handleImageClick(specialist)}
+                        title="Нажмите для просмотра в полном размере"
+                      >
                         <img 
                           src={specialist.photo}
                           alt={specialist.name}
@@ -390,6 +409,20 @@ export default function SpecialistsPage() {
         >
           ↑
         </button>
+      )}
+
+      {/* Модальное окно для просмотра фотографий */}
+      {selectedImage && (
+        <ImageModal
+          isOpen={imageModalOpen}
+          onClose={() => {
+            setImageModalOpen(false)
+            setSelectedImage(null)
+          }}
+          imageSrc={selectedImage.src}
+          imageAlt={selectedImage.alt}
+          specialistName={selectedImage.name}
+        />
       )}
     </>
   )

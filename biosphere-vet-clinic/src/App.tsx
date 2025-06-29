@@ -28,6 +28,7 @@ import AboutEquipmentPage from './components/AboutEquipmentPage'
 import About24_7Page from './components/About24_7Page'
 import AboutDoctorsPage from './components/AboutDoctorsPage'
 import AboutBranchesPage from './components/AboutBranchesPage'
+import ImageModal from '@/components/ImageModal'
 
 const specialists = [
   {
@@ -100,8 +101,17 @@ const specialists = [
 
 function MainSpecialistsPage() {
   const [search, setSearch] = useState('')
+  const [selectedBranch, setSelectedBranch] = useState('')
+  const [selectedSpecialization, setSelectedSpecialization] = useState('')
+  
+  // Состояние для модального окна просмотра фотографий
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<{src: string, alt: string, name: string} | null>(null)
+
+  const branches = [...new Set(specialists.map(s => s.branch))]
+  const specializations = [...new Set(specialists.map(s => s.specialization))]
+
   const [position, setPosition] = useState('')
-  const [specialization, setSpecialization] = useState('')
   const [branch, setBranch] = useState('')
 
   const uniquePositions = Array.from(new Set(specialists.map(s => s.position)))
@@ -117,9 +127,17 @@ function MainSpecialistsPage() {
 
   const resetFilters = () => {
     setSearch('')
-    setPosition('')
-    setSpecialization('')
-    setBranch('')
+    setSelectedBranch('')
+    setSelectedSpecialization('')
+  }
+
+  const handleImageClick = (specialist: any) => {
+    setSelectedImage({
+      src: specialist.photo,
+      alt: specialist.name,
+      name: specialist.name
+    })
+    setImageModalOpen(true)
   }
 
   return (
@@ -197,7 +215,11 @@ function MainSpecialistsPage() {
                   <Card key={specialist.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white dark:bg-[rgb(17,24,39)] bg-gradient-to-br from-white to-[#e3eaff] dark:from-[rgb(17,24,39)] dark:to-[rgb(17,24,39)]">
                     <CardContent className="p-6">
                       <div className="text-center mb-6">
-                        <div className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden">
+                        <div 
+                          className="w-24 h-24 bg-gradient-to-br from-biosphere-primary to-biosphere-secondary rounded-full mx-auto mb-4 overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+                          onClick={() => handleImageClick(specialist)}
+                          title="Нажмите для просмотра в полном размере"
+                        >
                           <img 
                             src={specialist.photo} 
                             alt={specialist.name}
@@ -250,6 +272,20 @@ function MainSpecialistsPage() {
         </main>
         <Footer />
       </div>
+
+      {/* Модальное окно для просмотра фотографий */}
+      {selectedImage && (
+        <ImageModal
+          isOpen={imageModalOpen}
+          onClose={() => {
+            setImageModalOpen(false)
+            setSelectedImage(null)
+          }}
+          imageSrc={selectedImage.src}
+          imageAlt={selectedImage.alt}
+          specialistName={selectedImage.name}
+        />
+      )}
     </ThemeProvider>
   )
 }
